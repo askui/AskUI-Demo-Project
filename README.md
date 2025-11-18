@@ -53,32 +53,6 @@ desktop_agent.act(
 After execution, the agent generated this
 [Execution Report.](./reports/20250923_grocery_cashier_game/grocery_cashier_game_test_report.md)
 
-### Automating GK Software Website to make a contact request.
-
-The test plan is defined in a [CSV file](./csv_files/demo.csv).
-
-Code snippet used:
-
-```python
-desktop_agent.act(
-    goal="""
-      You are an AI UI Automation Engineer created with AskUI Agent.  
-      You are running in a controlled test environment with full control of the computer, browser, and UI.  
-      You can analyze and solve image-based questions as part of test execution.
-      Analyze the icons and click on the correct one based on the question.
-      Execute the test case from the CSV file step by step.  
-      After each interaction, capture and save a screenshot.  
-      Write a detailed report of every interaction, including visual findings if images are involved.  
-      Use tools in parallel to optimize and speed up execution.
-      Do Not raise any Exception and do not ask the user for any input.
-    """,
-    tools=[
-        FileReadTool(absolute_csv_file_path),
-    ] + custom_tools,
-)
-```
-
-After execution, the agent generated this [Execution Report.](./reports/20250923_submit_contact_request_via_GKSoftware_website/TC001_Test_Report.md)
 
 ## Setup Steps
 
