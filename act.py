@@ -1,6 +1,6 @@
 import datetime
 import os
-from askui import VisionAgent
+from askui import WebVisionAgent
 from askui.tools.toolbox import AgentToolbox
 
 from helpers.test_report_template_tool import GetTestReportTemplateTool
@@ -14,7 +14,7 @@ from helpers.tools import (
 )
 
 def init_custom_tools(
-    askui_agent: VisionAgent,
+    askui_agent: WebVisionAgent,
     agent_workspace_directory: str,
 ):
     """
@@ -46,15 +46,15 @@ if __name__ == "__main__":
     )
 
     with (
-        VisionAgent() as desktop_agent,
+        WebVisionAgent() as web_agent,
     ):
         custom_tools = init_custom_tools(
-            desktop_agent,
+            web_agent,
             agent_workspace_directory_path,
         )
 
         # # Game Play
-        # desktop_agent.act(
+        # web_agent.act(
         #     """
         #     Open "https://www.mortgagecalculator.org/money-games/grocery-cashier/"
         #     Play the first level of the game.
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 "demo.csv",
             )
         )
-        desktop_agent.act(
+        web_agent.act(
             """
             You are an AI UI Automation Engineer created with AskUI Agent.  
             You are running in a controlled test environment with full control of the computer, browser, and UI.  
