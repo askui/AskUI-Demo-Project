@@ -1,0 +1,9 @@
+Test Case ID,Test Case Name,Step Number,Step,Expected Result
+TC001,Calculator Subtraction 20-10,1,Open the Calculator app on this Mac,Calculator app opens successfully
+,,2,Click the "2" button,2 is displayed in the calculator
+,,3,Click the "0" button,20 is displayed in the calculator
+,,4,Click the "−" (minus) button,Minus operator is selected
+,,5,Click the "1" button,1 is displayed after the minus sign
+,,6,Click the "0" button,10 is displayed after the minus sign
+,,7,Click the "=" button,The result 10 is displayed
+,,8,Verify that the displayed result is 10,Result shows 10 — test passed
