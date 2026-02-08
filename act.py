@@ -28,8 +28,8 @@ def parse_args() -> argparse.Namespace:
         "--cache",
         type=str,
         choices=["write", "read", "both", "no"],
-        default="no",
-        help="Caching strategy: write to record, read to replay (default: no)",
+        default="both",
+        help="Caching strategy: write to record, read to replay, both to read+write (default: both)",
     )
     return parser.parse_args()
 
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         act_tools=builtin_tools + custom_tools,
     ) as agent:
         agent.act(
-            "Execute the test case from the CSV file step by step.",
+            "Execute the test case from the CSV file step by step. Check for chache files and use them when available",
             settings=act_settings,
             caching_settings=caching_settings,
         )
