@@ -22,7 +22,7 @@ def parse_args() -> argparse.Namespace:
         "--display",
         type=int,
         default=1,
-        help="Display number to use (default: 2)",
+        help="Display number to use (default: 1)",
     )
     parser.add_argument(
         "--cache",
@@ -43,9 +43,9 @@ def build_system_prompt() -> ActSystemPrompt:
             "of the computer and UI. "
             "You can interact with desktop applications using mouse and keyboard."
         ),
-        device_information="macOS desktop computer controlled via AskUI Agent OS.",
+        device_information="desktop computer controlled via AskUI Agent OS.",
         ui_information=(
-            "You are testing the macOS Calculator app. "
+            "You are testing the Calculator app. "
             "Execute the test case from the CSV file step by step."
         ),
         report_format=(
