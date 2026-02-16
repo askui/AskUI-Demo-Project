@@ -21,7 +21,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--display",
         type=int,
-        default=2,
+        default=1,
         help="Display number to use (default: 2)",
     )
     parser.add_argument(
