@@ -241,6 +241,14 @@ The **VisionAgent** comes with built-in computer tools for UI automation, includ
 
 Reporting is enhanced by **SimpleHtmlReporter**, which writes HTML reports into the agent workspace.
 
+## Available VLMs
+The project supports multiple Claude models:
+
+claude-opus-4-6
+claude-sonnet-4-6 (default)
+claude-haiku-4-5-20251001
+claude-sonnet-4-5-20250929
+
 ## License
 
 This project is provided as an AskUI solution delivery template.
