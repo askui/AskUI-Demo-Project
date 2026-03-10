@@ -1,4 +1,4 @@
-# AskUI Vision Agent - Solution Delivery Template
+# AskUI Demo Project
 
 A task-driven automation framework built on AskUI Vision Agent that reads tasks from the `tasks/` folder, performs UI interactions, and generates per-task reports with screenshots in a timestamped workspace. Tasks are organized in a hierarchical folder structure with support for rules, setup, and teardown.
 
