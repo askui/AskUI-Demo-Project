@@ -133,7 +133,7 @@ python main.py tasks/demo --cache-strategy read --cache-dir .custom_cache
 2. Inherit from `askui.models.shared.tools.Tool`
 3. Register tools in `helpers/get_tools.py`
 
-### Available AI Models
+### Available VLMs
 
 The project supports multiple Claude models:
 - `claude-opus-4-6`
