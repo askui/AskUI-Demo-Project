@@ -70,7 +70,7 @@ Rules cascade from parent to child folders, so subgroups inherit their parent's 
 1. Clone the repository:
    ```bash
    git clone [repository-url]
-   cd harman
+   cd AskUI-Demo-Project
    ```
 
 2. Create and activate virtual environment:
@@ -97,9 +97,9 @@ Rules cascade from parent to child folders, so subgroups inherit their parent's 
 5. Configure environment variables:
    ```bash
    cp .env.template .env
-   # Edit .env file with your values:
-   # - ANTHROPIC_API_KEY: Your Anthropic API key
-   # - ANTHROPIC_BASE_URL: Harman's internal AI service endpoint
+   # Edit .env file with your values
+   ASKUI_WORSPACE_ID=<your_askui_workspace_id>
+   ASKUI_TOKEN=<your_askui_token>
    ```
 
 ## Usage
