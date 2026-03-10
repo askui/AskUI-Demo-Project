@@ -1,8 +1,8 @@
-# AskUI Demo Testing Project
+# Demo Project
 
 ## Overview
 
-This testing project is developed for AskUI Demo to ensure quality and reliability of automotive infotainment and connectivity solutions. The project uses the askui Python library for advanced UI automation, visual testing, and Android testing scenarios. Tasks are organized in a hierarchical folder structure and executed via a custom runner.
+This testing project is developed to demonstrate askui capabilities. The project uses the askui Python library for advanced UI automation, visual testing, and Android testing scenarios. Tasks are organized in a hierarchical folder structure and executed via a custom runner.
 
 ## Features
 
@@ -16,7 +16,7 @@ This testing project is developed for AskUI Demo to ensure quality and reliabili
 ## Project Structure
 
 ```
-askui-demo/
+AskUI-Demo-Project/
 ├── main.py                        # Entry point - hierarchical folder runner
 ├── pyproject.toml                 # PEP 621 project metadata
 ├── pdm.lock                       # PDM dependency lock file
