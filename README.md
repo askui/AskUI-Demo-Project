@@ -4,7 +4,7 @@ A task-driven automation framework built on AskUI Agent that reads tasks from th
 
 ## Overview
 
-This project automates UI tasks defined in text-based files under the `tasks/` directory. The AskUI Vision Agent:
+This project automates UI tasks defined in text-based files under the `tasks/` directory. The AskUI Agent:
 
 - Reads tasks from the **Task Folder** (`tasks/`) — supports `.txt`, `.md`, `.csv`, `.json`, and `.pdf`
 - Supports **hierarchical task organization** with rules, setup, and teardown per folder
@@ -222,7 +222,7 @@ PDF files are supported as task references. The agent will note the PDF path for
 
 ## Agent Tools
 
-The **VisionAgent** comes with built-in computer tools for UI automation, including:
+The **AskUI Agent** comes with built-in computer tools for UI automation, including:
 
 - Mouse control (move, click, press, drag)
 - Keyboard input (typing, key presses)
