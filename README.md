@@ -222,7 +222,7 @@ PDF files are supported as task references. The agent will note the PDF path for
 
 ## Agent Tools
 
-The **VisionAgent** comes with built-in computer tools for UI automation, including:
+The **AskUI Agent** comes with built-in computer tools for UI automation, including:
 
 - Mouse control (move, click, press, drag)
 - Keyboard input (typing, key presses)
