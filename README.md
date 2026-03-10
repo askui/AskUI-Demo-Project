@@ -136,10 +136,10 @@ python main.py tasks/demo --cache-strategy read --cache-dir .custom_cache
 ### Available AI Models
 
 The project supports multiple Claude models:
-- `claude-sonnet-4-20250514`
+- `claude-opus-4-6`
+- `claude-sonnet-4-6` (default)
 - `claude-haiku-4-5-20251001`
 - `claude-sonnet-4-5-20250929`
-- `sonnet-3.7-asia`
 
 ## Reports
 
