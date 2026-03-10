@@ -62,7 +62,7 @@ Rules cascade from parent to child folders, so subgroups inherit their parent's 
 
 ## Dependencies
 
-- `askui[android]==0.25.0` - AI-powered UI automation with Android support
+- `askui[android]==0.26.0` - AI-powered UI automation with Android support
 - `python-dotenv==1.2.1` - Environment variable management
 
 ## Installation
