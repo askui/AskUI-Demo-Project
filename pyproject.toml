@@ -1,0 +1,10 @@
+
+[project]
+# PEP 621 project metadata
+# See https://www.python.org/dev/peps/pep-0621/
+dependencies = [
+    "askui[android]==0.26.0",
+    "python-dotenv==1.2.1",
+    "ruff>=0.15.5",
+]
+requires-python = ">=3.11,<3.14"

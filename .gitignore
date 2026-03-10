@@ -1,0 +1,9 @@
+.DS_Store
+.pdm-python
+
+.venv
+.mypy_cache
+.ruff_cache
+__pycache__
+
+.askui_cache
