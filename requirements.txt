@@ -1,2 +1,2 @@
-askui[android]==0.26.0
+askui[all]==0.26.1
 python-dotenv==1.2.1
