@@ -1,27 +1,26 @@
 import argparse
 from datetime import datetime, timezone
-from dotenv import load_dotenv
 from pathlib import Path
 
 from askui import ComputerAgent
 from askui.models.shared.settings import (
     ActSettings,
-    MessageSettings,
-    CachingSettings,
     CacheWritingSettings,
+    CachingSettings,
+    MessageSettings,
 )
 from askui.reporting import SimpleHtmlReporter
+from askui.tools.store.computer import ComputerSaveScreenshotTool
 from askui.tools.store.universal import (
     ListFilesTool,
     PrintToConsoleTool,
     ReadFromFileTool,
     WriteToFileTool,
 )
-from askui.tools.store.computer import ComputerSaveScreenshotTool
+from dotenv import load_dotenv
 
 from helpers import get_agent_tools
 from system_prompt import create_system_prompt
-
 
 # Load Env variables, e.g. API Keys
 load_dotenv()
@@ -45,7 +44,8 @@ def parse_args() -> argparse.Namespace:
         "--cache-strategy",
         type=str,
         default="auto",
-        help="Caching strategy (default: auto)",
+        choices=["auto", "record", "execute"],
+        help="Caching strategy: auto, record, execute (default: auto)",
     )
     parser.add_argument(
         "--cache-dir",
@@ -293,7 +293,6 @@ if __name__ == "__main__":
         act_tools=act_tools,
         reporters=[SimpleHtmlReporter(report_dir=str(AGENT_WORKSPACE))],
     )
-    agent.act_settings.messages.system = system_prompt
 
     with agent:
         if is_single_task:
