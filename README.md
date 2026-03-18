@@ -249,6 +249,40 @@ claude-sonnet-4-6 (default)
 claude-haiku-4-5-20251001
 claude-sonnet-4-5-20250929
 
+## Web UI
+
+The project includes a web-based dashboard for managing tasks, viewing reports, editing prompts, and running the agent — all from the browser.
+
+### Running the Web UI
+
+```bash
+# Install dependencies (if not already)
+pip install -r requirements.txt
+
+# Start the server
+uvicorn web.server:app --port 8877 --reload
+```
+
+Then open **http://localhost:8877** in your browser.
+
+### Features
+
+| Page | Description |
+|------|-------------|
+| **Dashboard** | Overview of tasks, runs, datasets, tools, and cache |
+| **Tasks** | Browse, create, edit, and delete task files in the hierarchy |
+| **Runner** | Execute tasks with live terminal output and stop support |
+| **Reports** | View past runs, HTML reports, markdown reports, and screenshots |
+| **Test Data** | Manage JSON/CSV test datasets with inline editing |
+| **Tools** | View available custom tools and their parameters |
+| **Prompts** | Edit system prompt components (capabilities, device info, report format) |
+| **Cache** | View and clear cached execution trajectories |
+| **Settings** | Configure AskUI credentials and model provider API keys (writes to `.env`) |
+
+### Theme
+
+The UI supports both light and dark themes, toggled via the switch at the bottom of the sidebar. The theme preference is persisted in the browser.
+
 ## License
 
 This project is provided as an AskUI solution delivery template.
