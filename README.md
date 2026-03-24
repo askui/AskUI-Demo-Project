@@ -1,12 +1,12 @@
 # AskUI Demo Project
 
-A task-driven automation framework built on AskUI Agent that reads tasks from the `tasks/` folder, performs UI interactions, and generates per-task reports with screenshots in a timestamped workspace. Tasks are organized in a hierarchical folder structure with support for rules, setup, and teardown.
+A task-driven automation framework built on AskUI Agent that reads tests from the `tests/` folder, performs UI interactions, and generates per-test reports with screenshots in a timestamped workspace. Tests are organized in a hierarchical folder structure with support for rules, setup, and teardown.
 
 ## Overview
 
-This project automates UI tasks defined in text-based files under the `tasks/` directory. The AskUI Agent:
+This project automates UI tests defined in text-based files under the `tests/` directory. The AskUI Agent:
 
-- Reads tasks from the **Task Folder** (`tasks/`) — supports `.txt`, `.md`, `.csv`, `.json`, and `.pdf`
+- Reads tests from the **Tests Folder** (`tests/`) — supports `.txt`, `.md`, `.csv`, `.json`, and `.pdf`
 - Supports **hierarchical task organization** with rules, setup, and teardown per folder
 - Executes each task step-by-step via UI automation
 - Writes a summary report per task (what was done, result, issues, conclusion)
@@ -31,7 +31,7 @@ AskUI-Demo-Project/
 │   ├── system_capabilities.md     # Agent capabilities description
 │   ├── device_information.md      # Desktop device context
 │   └── report_format.md           # Report formatting guidelines
-├── tasks/                         # Task definitions (hierarchical)
+├── tests/                         # Test definitions (hierarchical)
 │   └── calculator_test.csv        # Example CSV test case
 ├── agent_workspace/               # Generated per run (timestamped)
 ├── .gitignore
@@ -40,21 +40,21 @@ AskUI-Demo-Project/
 
 ## Task Hierarchy
 
-Tasks are organized in folders under `tasks/`. Each folder can contain:
+Tests are organized in folders under `tests/`. Each folder can contain:
 
 | File | Purpose |
 |------|---------|
-| `rules.(md\|txt\|csv\|json\|pdf)` | Context/rules injected as system prompt for all tasks in folder |
-| `setup.(md\|txt\|csv\|json\|pdf)` | Executed before tasks in folder |
-| `teardown.(md\|txt\|csv\|json\|pdf)` | Executed after all tasks in folder |
-| `*.csv`, `*.md`, `*.txt`, `*.json`, `*.pdf` | Task files (executed in sorted order) |
+| `rules.(md\|txt\|csv\|json\|pdf)` | Context/rules injected as system prompt for all tests in folder |
+| `setup.(md\|txt\|csv\|json\|pdf)` | Executed before tests in folder |
+| `teardown.(md\|txt\|csv\|json\|pdf)` | Executed after all tests in folder |
+| `*.csv`, `*.md`, `*.txt`, `*.json`, `*.pdf` | Test files (executed in sorted order) |
 | Subdirectories | Subgroups that inherit parent rules |
 
 Rules cascade from parent to child folders, so subgroups inherit their parent's context.
 
 ### Example: setup.md
 
-A setup file runs before any tasks in the folder. Use it to prepare the environment:
+A setup file runs before any tests in the folder. Use it to prepare the environment:
 
 ```markdown
 ## Setup Steps
@@ -66,7 +66,7 @@ A setup file runs before any tasks in the folder. Use it to prepare the environm
 
 ### Example: teardown.md
 
-A teardown file runs after all tasks in the folder complete. Use it to clean up:
+A teardown file runs after all tests in the folder complete. Use it to clean up:
 
 ```markdown
 ## Teardown Steps
@@ -133,7 +133,7 @@ cp .env.template .env
 
 Key paths are defined in `main.py`:
 
-- **`TASK_FOLDER`** (`tasks/`): Folder containing task files the agent reads and executes.
+- **`TASK_FOLDER`** (`tests/`): Folder containing test files the agent reads and executes.
 - **`AGENT_WORKSPACE`** (`agent_workspace/YYYY-MM-DD_HH-MM-SS/`): Where the agent can write reports and screenshots (timestamped per run).
 
 You can customize the system prompt by editing the markdown files in `prompts/`:
@@ -143,17 +143,17 @@ You can customize the system prompt by editing the markdown files in `prompts/`:
 
 ## Usage
 
-### Running Tasks
+### Running Tests
 
 ```bash
-# Run all tasks from the default tasks/ folder
+# Run all tests from the default tests/ folder
 python main.py
 
-# Run tasks from a specific subfolder
-python main.py tasks/my_group
+# Run tests from a specific subfolder
+python main.py tests/my_group
 
-# Run a single task file (with setup/teardown from its folder hierarchy)
-python main.py tasks/calculator_test.csv
+# Run a single test file (with setup/teardown from its folder hierarchy)
+python main.py tests/calculator_test.csv
 
 # Cache options
 python main.py --cache-strategy auto --cache-dir .askui_cache
@@ -177,12 +177,12 @@ agent_workspace/YYYY-MM-DD_HH-MM-SS/
 └── ... (HTML report artifacts from SimpleHtmlReporter)
 ```
 
-### Adding New Tasks
+### Adding New Tests
 
-1. Create a new folder under `tasks/` for your task group
+1. Create a new folder under `tests/` for your test group
 2. Add a `rules.md` with context and rules for the group
 3. Optionally add `setup` and `teardown` files
-4. Add task files (CSV, Markdown, etc.) — they execute in sorted order
+4. Add test files (CSV, Markdown, etc.) — they execute in sorted order
 
 ### Adding Custom Tools
 
@@ -192,9 +192,9 @@ agent_workspace/YYYY-MM-DD_HH-MM-SS/
 
 See `helpers/tools/greeting_tool.py` for an example.
 
-## Task Formats
+## Test Formats
 
-Tasks can be provided in several formats. The agent reads files from `tasks/` and interprets them as tasks to execute.
+Tests can be provided in several formats. The agent reads files from `tests/` and interprets them as tests to execute.
 
 ### Plain text (`.txt`)
 
@@ -229,8 +229,8 @@ The **AskUI Agent** comes with built-in computer tools for UI automation, includ
 
 **In addition**, this project adds the following tools:
 
-- **ReadFromFileTool** (base: Task Folder): Read task file contents
-- **ListFilesTool** (Task Folder & Agent Workspace): List files in those directories
+- **ReadFromFileTool** (base: Tests Folder): Read test file contents
+- **ListFilesTool** (Tests Folder & Agent Workspace): List files in those directories
 - **WriteToFileTool** (base: Agent Workspace): Write reports and other files
 - **ComputerSaveScreenshotTool** (base: Agent Workspace): Capture and save screenshots to disk
 - **PrintToConsoleTool**: Print messages to the console

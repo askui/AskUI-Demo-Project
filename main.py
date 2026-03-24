@@ -57,8 +57,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "target",
         nargs="?",
-        default="tasks",
-        help="Path to a tasks folder or a single task file (default: tasks)",
+        default="tests",
+        help="Path to a tests folder or a single test file (default: tests)",
     )
     parser.add_argument(
         "--cache-strategy",
@@ -372,7 +372,7 @@ if __name__ == "__main__":
     system_prompt = create_system_prompt(ui_information=ui_information)
 
     act_tools = [
-        # Tools to enable reading the tasks from the Task Folder.
+        # Tools to enable reading the tests from the Tests Folder.
         ReadFromFileTool(base_dir=TASK_FOLDER),
         ListFilesTool(base_dir=TASK_FOLDER),
         # Tools to enable writing the reports to the Report Folder.
