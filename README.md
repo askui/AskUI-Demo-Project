@@ -1,9 +1,3 @@
-# AskUI Demo Testing Project
-
-## Overview
-
-This testing project is developed for AskUI Demo to ensure quality and reliability of automotive infotainment and connectivity solutions. The project uses the askui Python library for advanced UI automation, visual testing, and Android testing scenarios. Tasks are organized in a hierarchical folder structure and executed via a custom runner.
-
 ## Features
 
 - **Android Agent Testing**: Android UI automation with AskUI AndroidVisionAgent
