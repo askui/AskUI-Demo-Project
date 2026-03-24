@@ -151,7 +151,31 @@ def _make_act_settings(rules: str) -> ActSettings:
     )
 
 
-def run_setup(agent: ComputerAgent, folder: Path, rules: str):
+def _sanitize_filename(name: str) -> str:
+    """Replace characters unsafe for NTFS/FAT filesystems with underscores."""
+    import re
+
+    return re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", name)
+
+
+def _make_caching_settings(
+    caching_settings: CachingSettings | None, filename: str
+) -> CachingSettings:
+    """Clone caching settings and set the cache filename."""
+    caching_settings = caching_settings or CachingSettings()
+    caching_settings.writing_settings = (
+        caching_settings.writing_settings or CacheWritingSettings()
+    )
+    caching_settings.writing_settings.filename = _sanitize_filename(filename)
+    return caching_settings
+
+
+def run_setup(
+    agent: ComputerAgent,
+    folder: Path,
+    rules: str,
+    caching_settings: CachingSettings | None = None,
+):
     """Run the setup file for a folder if it exists."""
     setup_file = find_special_file(folder, "setup")
     if not setup_file:
@@ -160,10 +184,18 @@ def run_setup(agent: ComputerAgent, folder: Path, rules: str):
     agent.act(
         f"Execute the following setup steps:\n\n{read_file_content(setup_file)}",
         act_settings=_make_act_settings(rules),
+        caching_settings=_make_caching_settings(
+            caching_settings, f"{folder.name}_setup"
+        ),
     )
 
 
-def run_teardown(agent: ComputerAgent, folder: Path, rules: str):
+def run_teardown(
+    agent: ComputerAgent,
+    folder: Path,
+    rules: str,
+    caching_settings: CachingSettings | None = None,
+):
     """Run the teardown file for a folder if it exists."""
     teardown_file = find_special_file(folder, "teardown")
     if not teardown_file:
@@ -172,6 +204,9 @@ def run_teardown(agent: ComputerAgent, folder: Path, rules: str):
     agent.act(
         f"Execute the following teardown/cleanup steps:\n\n{read_file_content(teardown_file)}",
         act_settings=_make_act_settings(rules),
+        caching_settings=_make_caching_settings(
+            caching_settings, f"{folder.name}_teardown"
+        ),
     )
 
 
@@ -185,11 +220,6 @@ def run_single_task(
     print(f"Executing task: {task_file.stem}")
 
     act_settings = _make_act_settings(rules)
-    caching_settings = caching_settings or CachingSettings()
-    caching_settings.writing_settings = (
-        caching_settings.writing_settings or CacheWritingSettings()
-    )
-    caching_settings.writing_settings.filename = task_file.stem
 
     agent.act(
         f"""
@@ -209,7 +239,7 @@ def run_single_task(
     - ./<task_name>/<task_name>_screenshot.png
     """,
         act_settings=act_settings,
-        caching_settings=caching_settings,
+        caching_settings=_make_caching_settings(caching_settings, task_file.stem),
     )
 
 
@@ -247,7 +277,7 @@ def run_single_task_with_lifecycle(
 
     # Setups: top-down
     for folder, rules in levels:
-        run_setup(agent, folder, rules)
+        run_setup(agent, folder, rules, caching_settings=caching_settings)
 
     # Task
     run_single_task(
@@ -256,7 +286,7 @@ def run_single_task_with_lifecycle(
 
     # Teardowns: bottom-up
     for folder, rules in reversed(levels):
-        run_teardown(agent, folder, rules)
+        run_teardown(agent, folder, rules, caching_settings=caching_settings)
 
 
 def run_folder(
@@ -281,7 +311,7 @@ def run_folder(
     local_rules = read_file_content(rules_file) if rules_file else ""
     full_rules = "\n\n".join(filter(None, [parent_rules, local_rules]))
 
-    run_setup(agent, folder, full_rules)
+    run_setup(agent, folder, full_rules, caching_settings=caching_settings)
 
     for task_file in collect_task_files(folder):
         run_single_task(
@@ -294,7 +324,7 @@ def run_folder(
             agent, subgroup, parent_rules=full_rules, caching_settings=caching_settings
         )
 
-    run_teardown(agent, folder, full_rules)
+    run_teardown(agent, folder, full_rules, caching_settings=caching_settings)
 
 
 if __name__ == "__main__":
