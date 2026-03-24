@@ -4,10 +4,12 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 from askui import ComputerAgent
+from askui.models.shared.prompts import ActSystemPrompt
 from askui.models.shared.settings import (
     ActSettings,
     MessageSettings,
     CachingSettings,
+    CacheExecutionSettings,
     CacheWritingSettings,
 )
 from askui.reporting import SimpleHtmlReporter
@@ -20,17 +22,34 @@ from askui.tools.store.universal import (
 from askui.tools.store.computer import ComputerSaveScreenshotTool
 
 from helpers import get_agent_tools
-from system_prompt import create_system_prompt
 
 
 # Load Env variables, e.g. API Keys
 load_dotenv()
+
+PROMPTS_DIR = Path(__file__).parent / "prompts"
 
 # Reserved filenames (stem) that provide folder-level context, not tasks
 SPECIAL_STEMS = {"rules", "setup", "teardown"}
 
 # Supported task file extensions
 TASK_EXTENSIONS = {".txt", ".md", ".pdf", ".csv", ".json"}
+
+
+def _read_prompt(filename: str) -> str:
+    return (PROMPTS_DIR / filename).read_text(encoding="utf-8").strip()
+
+
+def create_system_prompt(
+    ui_information: str = "", additional_rules: str = ""
+) -> ActSystemPrompt:
+    return ActSystemPrompt(
+        system_capabilities=_read_prompt("system_capabilities.md"),
+        device_information=_read_prompt("device_information.md"),
+        ui_information=ui_information,
+        report_format=_read_prompt("report_format.md"),
+        additional_rules=additional_rules,
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -52,6 +71,44 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default=".askui_cache",
         help="Directory for cache files (default: .askui_cache)",
+    )
+    parser.add_argument(
+        "--cache-delay-between-actions",
+        type=float,
+        default=1.0,
+        help="Delay in seconds between cached actions (default: 1.0)",
+    )
+    parser.add_argument(
+        "--cache-skip-visual-validation",
+        action="store_true",
+        default=False,
+        help="Skip visual validation during cache execution",
+    )
+    parser.add_argument(
+        "--cache-visual-validation-threshold",
+        type=int,
+        default=10,
+        help="Max Hamming distance for visual validation (default: 10)",
+    )
+    parser.add_argument(
+        "--cache-parameter-identification-strategy",
+        type=str,
+        choices=["llm", "preset"],
+        default="llm",
+        help="Cache parameter identification strategy (default: llm)",
+    )
+    parser.add_argument(
+        "--cache-visual-verification-method",
+        type=str,
+        choices=["phash", "ahash", "none"],
+        default="phash",
+        help="Hash method for visual verification (default: phash)",
+    )
+    parser.add_argument(
+        "--cache-visual-validation-region-size",
+        type=int,
+        default=100,
+        help="Region size for visual validation (default: 100)",
     )
     return parser.parse_args()
 
@@ -267,6 +324,16 @@ if __name__ == "__main__":
     caching_settings = CachingSettings(
         strategy=args.cache_strategy,
         cache_dir=args.cache_dir,
+        execution_settings=CacheExecutionSettings(
+            delay_time_between_actions=args.cache_delay_between_actions,
+            skip_visual_validation=args.cache_skip_visual_validation,
+            visual_validation_threshold=args.cache_visual_validation_threshold,
+        ),
+        writing_settings=CacheWritingSettings(
+            parameter_identification_strategy=args.cache_parameter_identification_strategy,
+            visual_verification_method=args.cache_visual_verification_method,
+            visual_validation_region_size=args.cache_visual_validation_region_size,
+        ),
     )
 
     # Read root-level rules for the system prompt

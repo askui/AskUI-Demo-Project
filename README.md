@@ -18,29 +18,21 @@ This project automates UI tasks defined in text-based files under the `tasks/` d
 ## Project Structure
 
 ```
-solution-delivery-template/
+AskUI-Demo-Project/
 ├── main.py                        # Entry point - hierarchical folder runner
-├── system_prompt.py               # System prompt builder (reads from prompts/)
 ├── requirements.txt               # Python dependencies
-├── ruff.toml                      # Linting/formatting configuration
-├── .vscode/settings.json          # Editor & AskUI Shell terminal profile
+├── .env.template                  # Environment variable template
 ├── helpers/                       # Custom tools and utilities
 │   ├── __init__.py
 │   ├── get_tools.py               # Tool factory function
 │   └── tools/
-│       ├── __init__.py
 │       └── greeting_tool.py       # Example custom tool
 ├── prompts/                       # Prompt parts for the system prompt (MD files)
 │   ├── system_capabilities.md     # Agent capabilities description
 │   ├── device_information.md      # Desktop device context
 │   └── report_format.md           # Report formatting guidelines
 ├── tasks/                         # Task definitions (hierarchical)
-│   └── demo/
-│       ├── rules.md               # Rules for this task group
-│       ├── calculator.csv         # CSV test case
-│       ├── clock_demo.txt         # Text task
-│       ├── notepad_hello.md       # Markdown task
-│       └── webbrowser.json        # JSON task
+│   └── calculator_test.csv        # Example CSV test case
 ├── agent_workspace/               # Generated per run (timestamped)
 ├── .gitignore
 └── README.md                      # This file
@@ -158,13 +150,19 @@ You can customize the system prompt by editing the markdown files in `prompts/`:
 python main.py
 
 # Run tasks from a specific subfolder
-python main.py tasks/demo
+python main.py tasks/my_group
 
 # Run a single task file (with setup/teardown from its folder hierarchy)
-python main.py tasks/demo/calculator.csv
+python main.py tasks/calculator_test.csv
 
-# Custom caching options
-python main.py tasks/demo --cache-strategy auto --cache-dir .askui_cache
+# Cache options
+python main.py --cache-strategy auto --cache-dir .askui_cache
+
+# Cache execution settings
+python main.py --cache-delay-between-actions 2.0 --cache-skip-visual-validation --cache-visual-validation-threshold 15
+
+# Cache writing settings
+python main.py --cache-parameter-identification-strategy preset --cache-visual-verification-method ahash --cache-visual-validation-region-size 150
 ```
 
 ### Output Structure
