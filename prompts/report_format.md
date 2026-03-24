@@ -29,11 +29,13 @@ Brief description of the test case objective and outcome.
 ## Test Steps
 
 1. **{action}** — Status: **{status}**
+   - **Agent Interpretation:** {agent_interpretation}
    - **Expected:** {expected_result}
    - **Actual:** {actual_result}
    - ![Step 1](step_1.png)
 
 2. **{action}** — Status: **{status}**
+   - **Agent Interpretation:** {agent_interpretation}
    - **Expected:** {expected_result}
    - **Actual:** {actual_result}
    - ![Step 2](step_2.png)
