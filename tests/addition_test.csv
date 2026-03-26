@@ -1,0 +1,8 @@
+Test Case ID,Test Case Name,Step Number,Step,Expected Result
+TC002,Calculator Addition 15+25,1,Click the "1" button,1 is displayed in the calculator
+,,2,Click the "5" button,15 is displayed in the calculator
+,,3,Click the "+" (plus) button,Plus operator is selected
+,,4,Click the "2" button,2 is displayed after the plus sign
+,,5,Click the "5" button,25 is displayed after the plus sign
+,,6,Click the "=" button,The result 40 is displayed
+,,7,Verify that the displayed result is 40,Result shows 40 — test passed

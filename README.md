@@ -32,7 +32,11 @@ AskUI-Demo-Project/
 │   ├── device_information.md      # Desktop device context
 │   └── report_format.md           # Report formatting guidelines
 ├── tests/                         # Test definitions (hierarchical)
-│   └── calculator_test.csv        # Example CSV test case
+│   ├── rules.md                   # Global rules for all tests
+│   ├── setup.md                   # Setup steps (run before tests)
+│   ├── teardown.md                # Teardown steps (run after tests)
+│   ├── addition_test.csv          # Calculator addition test case
+│   └── subtraction_test.csv       # Calculator subtraction test case
 ├── agent_workspace/               # Generated per run (timestamped)
 ├── .gitignore
 └── README.md                      # This file
@@ -124,10 +128,24 @@ pip install -r requirements.txt
 
 ### Step 5: Configure Environment Variables
 
-```bash
-cp .env.template .env
-# Edit .env file with your API keys
-```
+1. **Copy the template:**
+
+   ```bash
+   cp .env.template .env
+   ```
+
+2. **Get your credentials from the AskUI Portal:**
+   - Go to [https://hub.askui.com](https://hub.askui.com) and sign in
+   - Navigate to **Access Tokens** in the sidebar
+   - Create a new access token following the [Access Token Guide](https://docs.askui.com/02-how-to-guides/01-account-management/04-tokens#create-access-token)
+   - Copy the **Workspace ID** shown in the portal
+
+3. **Edit the `.env` file** and fill in your credentials:
+
+   ```
+   ASKUI_WORKSPACE_ID=<your-workspace-id-here>
+   ASKUI_TOKEN=<your-token-here>
+   ```
 
 ## Configuration
 

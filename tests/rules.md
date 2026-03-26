@@ -1,0 +1,4 @@
+- Always use the Windows Calculator app in Standard mode
+- After each calculation, verify the displayed result matches the expected result before proceeding
+- If a test step fails, take a screenshot and continue with the next test case
+- Clear the calculator (press "C" or "CE") between separate test cases
