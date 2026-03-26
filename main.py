@@ -29,11 +29,11 @@ load_dotenv()
 
 PROMPTS_DIR = Path(__file__).parent / "prompts"
 
-# Reserved filenames (stem) that provide folder-level context, not tasks
+# Reserved filenames (stem) that provide folder-level context, not tests
 SPECIAL_STEMS = {"rules", "setup", "teardown"}
 
-# Supported task file extensions
-TASK_EXTENSIONS = {".txt", ".md", ".pdf", ".csv", ".json"}
+# Supported test file extensions
+TEST_EXTENSIONS = {".txt", ".md", ".pdf", ".csv", ".json"}
 
 
 def _read_prompt(filename: str) -> str:
@@ -115,7 +115,7 @@ def parse_args() -> argparse.Namespace:
 
 def find_special_file(folder: Path, stem: str) -> Path | None:
     """Find a special file (context, setup, teardown) in any supported format."""
-    for ext in TASK_EXTENSIONS:
+    for ext in TEST_EXTENSIONS:
         candidate = folder / f"{stem}{ext}"
         if candidate.exists():
             return candidate
@@ -129,13 +129,13 @@ def read_file_content(file_path: Path) -> str:
     return file_path.read_text(encoding="utf-8").strip()
 
 
-def collect_task_files(folder: Path) -> list[Path]:
-    """Collect task files from a folder, excluding special files and subdirectories."""
-    task_files = []
+def collect_test_files(folder: Path) -> list[Path]:
+    """Collect test files from a folder, excluding special files and subdirectories."""
+    test_files = []
     for f in sorted(folder.iterdir()):
-        if f.is_file() and f.suffix in TASK_EXTENSIONS and f.stem not in SPECIAL_STEMS:
-            task_files.append(f)
-    return task_files
+        if f.is_file() and f.suffix in TEST_EXTENSIONS and f.stem not in SPECIAL_STEMS:
+            test_files.append(f)
+    return test_files
 
 
 def collect_subgroups(folder: Path) -> list[Path]:
@@ -155,7 +155,7 @@ def _sanitize_filename(name: str) -> str:
     """Replace characters unsafe for NTFS/FAT filesystems with underscores."""
     import re
 
-    return re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", name)
+    return re.sub(r'[<>:"/\\|?*\x00-\x1f\s]', "_", name)
 
 
 def _make_caching_settings(
@@ -181,6 +181,7 @@ def run_setup(
     if not setup_file:
         return
     print(f"[{folder.name}] Running setup...")
+    
     agent.act(
         f"Execute the following setup steps:\n\n{read_file_content(setup_file)}",
         act_settings=_make_act_settings(rules),
@@ -188,6 +189,7 @@ def run_setup(
             caching_settings, f"{folder.name}_setup"
         ),
     )
+
 
 
 def run_teardown(
@@ -210,36 +212,36 @@ def run_teardown(
     )
 
 
-def run_single_task(
+def run_single_test(
     agent: ComputerAgent,
-    task_file: Path,
+    test_file: Path,
     rules: str,
     caching_settings: CachingSettings | None = None,
 ):
-    """Run a single task file with pre-computed rules."""
-    print(f"Executing task: {task_file.stem}")
+    """Run a single test file with pre-computed rules."""
+    print(f"Executing test: {test_file.stem}")
 
+    test_content = read_file_content(test_file)
+    test_name = _sanitize_filename(test_file.stem)
     act_settings = _make_act_settings(rules)
 
     agent.act(
-        f"""
-    Read the task from the Task file {task_file} and execute it.
-    Be verbose during the execution share with me all the details.
+        f"""Execute the following test and write a report.
 
-    For each task, you must write a summary report about the task:
-    - What was the task?
-    - What you did to complete the task?
-    - What was the result of the task?
-    - What was the issue if any?
-    - What was the conclusion of the task?
-    - Must include a screenshot of each system interaction and include it to the report.
+## Test
+{test_content}
 
-    Organize the files in the following way:
-    - ./<task_name>/<task_name>_report.md
-    - ./<task_name>/<task_name>_screenshot.png
-    """,
+## Instructions
+1. Execute each test step in order.
+2. After each step, take a screenshot and verify the actual result against the expected result.
+3. If a step fails, record the failure and continue with the remaining steps.
+4. Write the report following the report format provided in the system prompt.
+5. Save all artifacts into `./{test_name}/`:
+   - Report: `./{test_name}/{test_name}_report.md`
+   - Screenshots: `./{test_name}/step_{{n}}.png`
+""",
         act_settings=act_settings,
-        caching_settings=_make_caching_settings(caching_settings, task_file.stem),
+        caching_settings=_make_caching_settings(caching_settings, test_name),
     )
 
 
@@ -254,17 +256,17 @@ def _collect_folder_chain(folder: Path) -> list[Path]:
     return chain
 
 
-def run_single_task_with_lifecycle(
+def run_single_test_with_lifecycle(
     agent: ComputerAgent,
-    task_file: Path,
+    test_file: Path,
     caching_settings: CachingSettings | None = None,
 ):
     """
-    Run a single task file with full setup/teardown lifecycle.
-    Walks the ancestor folder chain and runs setups top-down, then the task,
+    Run a single test file with full setup/teardown lifecycle.
+    Walks the ancestor folder chain and runs setups top-down, then the test,
     then teardowns bottom-up — mirroring how run_folder would behave.
     """
-    folder_chain = _collect_folder_chain(task_file.parent)
+    folder_chain = _collect_folder_chain(test_file.parent)
 
     # Build cumulative rules per folder level
     levels: list[tuple[Path, str]] = []
@@ -279,9 +281,9 @@ def run_single_task_with_lifecycle(
     for folder, rules in levels:
         run_setup(agent, folder, rules, caching_settings=caching_settings)
 
-    # Task
-    run_single_task(
-        agent, task_file, rules=cumulative_rules, caching_settings=caching_settings
+    # Test
+    run_single_test(
+        agent, test_file, rules=cumulative_rules, caching_settings=caching_settings
     )
 
     # Teardowns: bottom-up
@@ -296,13 +298,13 @@ def run_folder(
     caching_settings: CachingSettings | None = None,
 ):
     """
-    Run all tasks in a folder with the setup/rules/teardown pattern.
+    Run all tests in a folder with the setup/rules/teardown pattern.
     Recurses into subgroup folders.
 
     Hierarchy:
         1. Read rules (inherits from parent + own) → set as system prompt
         2. Run setup
-        3. Run task files
+        3. Run test files
         4. Recurse into subgroups
         5. Run teardown
     """
@@ -313,9 +315,9 @@ def run_folder(
 
     run_setup(agent, folder, full_rules, caching_settings=caching_settings)
 
-    for task_file in collect_task_files(folder):
-        run_single_task(
-            agent, task_file, rules=full_rules, caching_settings=caching_settings
+    for test_file in collect_test_files(folder):
+        run_single_test(
+            agent, test_file, rules=full_rules, caching_settings=caching_settings
         )
 
     for subgroup in collect_subgroups(folder):
@@ -334,14 +336,14 @@ if __name__ == "__main__":
     if not TARGET.exists():
         raise FileNotFoundError(f"Target not found: {TARGET}")
 
-    is_single_task = TARGET.is_file()
-    if is_single_task and TARGET.suffix not in TASK_EXTENSIONS:
+    is_single_test = TARGET.is_file()
+    if is_single_test and TARGET.suffix not in TEST_EXTENSIONS:
         raise ValueError(
-            f"Unsupported task file type: {TARGET.suffix}. "
-            f"Supported: {', '.join(sorted(TASK_EXTENSIONS))}"
+            f"Unsupported test file type: {TARGET.suffix}. "
+            f"Supported: {', '.join(sorted(TEST_EXTENSIONS))}"
         )
 
-    TASK_FOLDER = TARGET.parent if is_single_task else TARGET
+    TEST_FOLDER = TARGET.parent if is_single_test else TARGET
 
     # Define the agent workspace directory.
     AGENT_WORKSPACE = (
@@ -367,14 +369,14 @@ if __name__ == "__main__":
     )
 
     # Read root-level rules for the system prompt
-    root_rules_file = find_special_file(TASK_FOLDER, "rules")
+    root_rules_file = find_special_file(TEST_FOLDER, "rules")
     ui_information = read_file_content(root_rules_file) if root_rules_file else ""
     system_prompt = create_system_prompt(ui_information=ui_information)
 
     act_tools = [
         # Tools to enable reading the tests from the Tests Folder.
-        ReadFromFileTool(base_dir=TASK_FOLDER),
-        ListFilesTool(base_dir=TASK_FOLDER),
+        ReadFromFileTool(base_dir=TEST_FOLDER),
+        ListFilesTool(base_dir=TEST_FOLDER),
         # Tools to enable writing the reports to the Report Folder.
         WriteToFileTool(base_dir=AGENT_WORKSPACE),
         ListFilesTool(base_dir=AGENT_WORKSPACE),
@@ -393,9 +395,9 @@ if __name__ == "__main__":
     agent.act_settings.messages.system = system_prompt
 
     with agent:
-        if is_single_task:
-            run_single_task_with_lifecycle(
+        if is_single_test:
+            run_single_test_with_lifecycle(
                 agent, TARGET, caching_settings=caching_settings
             )
         else:
-            run_folder(agent, TASK_FOLDER, caching_settings=caching_settings)
+            run_folder(agent, TEST_FOLDER, caching_settings=caching_settings)
