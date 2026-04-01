@@ -12,6 +12,7 @@ from askui.models.shared.settings import (
     CacheExecutionSettings,
     CacheWritingSettings,
 )
+from askui.models.shared.agent_message_param import CacheControlEphemeralParam
 from askui.reporting import SimpleHtmlReporter
 from askui.tools.store.universal import (
     ListFilesTool,
@@ -28,6 +29,8 @@ from helpers import get_agent_tools
 load_dotenv()
 
 PROMPTS_DIR = Path(__file__).parent / "prompts"
+PROCEDURES_DIR = Path(__file__).parent / "procedures"
+PLANS_DIR = Path(__file__).parent / "plans"
 
 # Reserved filenames (stem) that provide folder-level context, not tests
 SPECIAL_STEMS = {"rules", "setup", "teardown"}
@@ -40,15 +43,43 @@ def _read_prompt(filename: str) -> str:
     return (PROMPTS_DIR / filename).read_text(encoding="utf-8").strip()
 
 
+def load_procedures() -> str:
+    """Load all procedure files and format them as a prompt section."""
+    if not PROCEDURES_DIR.exists():
+        return ""
+    procedures = []
+    for f in sorted(PROCEDURES_DIR.iterdir()):
+        if f.is_file() and f.suffix in TEST_EXTENSIONS:
+            content = f.read_text(encoding="utf-8").strip()
+            procedures.append(f"### {f.stem}\n{content}")
+    if not procedures:
+        return ""
+    return "## Known Procedures\nWhen a test step references a procedure by name, execute the corresponding steps below.\n\n" + "\n\n".join(procedures)
+
+
+def load_plan(plan_name: str) -> str:
+    """Load a plan file by name (without extension) from the plans directory."""
+    for ext in TEST_EXTENSIONS:
+        candidate = PLANS_DIR / f"{plan_name}{ext}"
+        if candidate.exists():
+            return candidate.read_text(encoding="utf-8").strip()
+    available = [f.stem for f in PLANS_DIR.iterdir() if f.is_file()] if PLANS_DIR.exists() else []
+    raise FileNotFoundError(
+        f"Plan '{plan_name}' not found in {PLANS_DIR}. Available: {', '.join(available) or 'none'}"
+    )
+
+
 def create_system_prompt(
     ui_information: str = "", additional_rules: str = ""
 ) -> ActSystemPrompt:
+    procedures = load_procedures()
+    combined_rules = "\n\n".join(filter(None, [additional_rules, procedures]))
     return ActSystemPrompt(
         system_capabilities=_read_prompt("system_capabilities.md"),
         device_information=_read_prompt("device_information.md"),
         ui_information=ui_information,
         report_format=_read_prompt("report_format.md"),
-        additional_rules=additional_rules,
+        additional_rules=combined_rules,
     )
 
 
@@ -59,6 +90,12 @@ def parse_args() -> argparse.Namespace:
         nargs="?",
         default="tests",
         help="Path to a tests folder or a single test file (default: tests)",
+    )
+    parser.add_argument(
+        "--plan",
+        type=str,
+        default=None,
+        help="Name of a plan file (without extension) from plans/ to execute",
     )
     parser.add_argument(
         "--cache-strategy",
@@ -147,6 +184,7 @@ def _make_act_settings(rules: str) -> ActSettings:
     return ActSettings(
         messages=MessageSettings(
             system=create_system_prompt(additional_rules=rules),
+            provider_options={"cache_control": CacheControlEphemeralParam()},
         )
     )
 
@@ -235,14 +273,82 @@ def run_single_test(
 1. Execute each test step in order.
 2. After each step, take a screenshot and verify the actual result against the expected result.
 3. If a step fails, record the failure and continue with the remaining steps.
-4. Write the report following the report format provided in the system prompt.
-5. Save all artifacts into `./{test_name}/`:
+4. Use PrintToConsoleTool to log progress before each step (e.g., "Step 1: Click the 2 button") and after (e.g., "Step 1: PASSED" or "Step 1: FAILED — actual result was X").
+5. Write the report following the report format provided in the system prompt.
+6. Save all artifacts into `./{test_name}/`:
    - Report: `./{test_name}/{test_name}_report.md`
    - Screenshots: `./{test_name}/step_{{n}}.png`
 """,
         act_settings=act_settings,
         caching_settings=_make_caching_settings(caching_settings, test_name),
     )
+
+
+def collect_all_test_files(folder: Path) -> list[Path]:
+    """Recursively collect all test files from a folder tree."""
+    all_files = list(collect_test_files(folder))
+    for subgroup in collect_subgroups(folder):
+        all_files.extend(collect_all_test_files(subgroup))
+    return all_files
+
+
+def resolve_plan(
+    agent: ComputerAgent,
+    plan_content: str,
+    available_tests: list[Path],
+    test_root: Path,
+    workspace: Path,
+) -> list[Path]:
+    """Use the agent to interpret a plan and filter test cases. Returns selected test paths."""
+    import json
+
+    test_list = "\n".join(f"- {t.relative_to(test_root)}" for t in available_tests)
+    output_file = workspace / "_plan_selection.json"
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+
+    agent.act(
+        f"""You are a test plan resolver. Given a plan and a list of available test files, select which tests match the plan.
+
+## Plan
+{plan_content}
+
+## Available Tests
+{test_list}
+
+## Instructions
+Select the test files that match the plan. Write a JSON array of the selected file paths (exactly as listed above) to the file `_plan_selection.json`.
+Example output: ["subtraction_test.csv", "addition_test.csv"]
+
+Only output the JSON array, nothing else.
+""",
+        act_settings=ActSettings(
+            messages=MessageSettings(system=create_system_prompt()),
+        ),
+    )
+
+    if not output_file.exists():
+        print("Warning: Plan resolution produced no output. Running all tests.")
+        return available_tests
+
+    selected_names = json.loads(output_file.read_text(encoding="utf-8"))
+    selected = []
+    for name in selected_names:
+        full_path = test_root / Path(name)
+        if full_path.exists():
+            selected.append(full_path)
+        else:
+            print(f"Warning: Plan selected '{name}' but file not found, skipping.")
+    return selected
+
+
+def run_selected_tests(
+    agent: ComputerAgent,
+    test_files: list[Path],
+    caching_settings: CachingSettings | None = None,
+):
+    """Run a list of selected test files, each with its full setup/teardown lifecycle."""
+    for test_file in test_files:
+        run_single_test_with_lifecycle(agent, test_file, caching_settings=caching_settings)
 
 
 def _collect_folder_chain(folder: Path) -> list[Path]:
@@ -395,7 +501,16 @@ if __name__ == "__main__":
     agent.act_settings.messages.system = system_prompt
 
     with agent:
-        if is_single_test:
+        if args.plan:
+            plan_content = load_plan(args.plan)
+            all_tests = collect_all_test_files(TEST_FOLDER)
+            print(f"Resolving plan '{args.plan}' against {len(all_tests)} available tests...")
+            selected = resolve_plan(
+                agent, plan_content, all_tests, TEST_FOLDER, AGENT_WORKSPACE
+            )
+            print(f"Plan selected {len(selected)} test(s): {[t.stem for t in selected]}")
+            run_selected_tests(agent, selected, caching_settings=caching_settings)
+        elif is_single_test:
             run_single_test_with_lifecycle(
                 agent, TARGET, caching_settings=caching_settings
             )
