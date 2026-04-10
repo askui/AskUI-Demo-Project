@@ -1,14 +1,14 @@
 import argparse
 from datetime import datetime, timezone
-from dotenv import load_dotenv
 from pathlib import Path
 
 from askui import ComputerAgent
+from askui.models.shared.prompts import ActSystemPrompt
 from askui.models.shared.settings import (
     ActSettings,
-    MessageSettings,
+    CacheWritingSettings,
     CachingSettings,
-    CacheWritingSettings
+    MessageSettings,
 )
 from askui.reporting import SimpleHtmlReporter
 from askui.tools.store.computer import ComputerSaveScreenshotTool
@@ -25,11 +25,9 @@ from askui.tools.store.universal import (
     ReadFromFileTool,
     WriteToFileTool,
 )
-
-from askui.models.shared.prompts import ActSystemPrompt
+from dotenv import load_dotenv
 
 from helpers import get_agent_tools
-
 
 PROMPTS_DIR = Path(__file__).parent / "prompts"
 
@@ -38,7 +36,9 @@ def _read_prompt(filename: str) -> str:
     return (PROMPTS_DIR / filename).read_text(encoding="utf-8").strip()
 
 
-def create_system_prompt(ui_information: str = "", additional_rules: str = "") -> ActSystemPrompt:
+def create_system_prompt(
+    ui_information: str = "", additional_rules: str = ""
+) -> ActSystemPrompt:
     return ActSystemPrompt(
         system_capabilities=_read_prompt("system_capabilities.md"),
         device_information=_read_prompt("device_information.md"),
@@ -154,7 +154,9 @@ def run_single_task(
 
     act_settings = _make_act_settings(rules)
     caching_settings = caching_settings or CachingSettings()
-    caching_settings.writing_settings = caching_settings.writing_settings or CacheWritingSettings()
+    caching_settings.writing_settings = (
+        caching_settings.writing_settings or CacheWritingSettings()
+    )
     caching_settings.writing_settings.filename = task_file.stem
 
     agent.act(
@@ -174,8 +176,8 @@ def run_single_task(
     - ./<task_name>/<task_name>_report.md
     - ./<task_name>/<task_name>_screenshot.png
     """,
-    act_settings=act_settings,
-    caching_settings=caching_settings,
+        act_settings=act_settings,
+        caching_settings=caching_settings,
     )
 
 
@@ -216,7 +218,9 @@ def run_single_task_with_lifecycle(
         run_setup(agent, folder, rules)
 
     # Task
-    run_single_task(agent, task_file, rules=cumulative_rules, caching_settings=caching_settings)
+    run_single_task(
+        agent, task_file, rules=cumulative_rules, caching_settings=caching_settings
+    )
 
     # Teardowns: bottom-up
     for folder, rules in reversed(levels):
@@ -248,11 +252,15 @@ def run_folder(
     run_setup(agent, folder, full_rules)
 
     for task_file in collect_task_files(folder):
-        run_single_task(agent, task_file, rules=full_rules, caching_settings=caching_settings)
+        run_single_task(
+            agent, task_file, rules=full_rules, caching_settings=caching_settings
+        )
 
     for subgroup in collect_subgroups(folder):
         print(f"[{folder.name}] Entering group: {subgroup.name}")
-        run_folder(agent, subgroup, parent_rules=full_rules, caching_settings=caching_settings)
+        run_folder(
+            agent, subgroup, parent_rules=full_rules, caching_settings=caching_settings
+        )
 
     run_teardown(agent, folder, full_rules)
 
@@ -281,6 +289,9 @@ if __name__ == "__main__":
     )
 
     # Build caching settings from CLI args
+    cache_strategy = (
+        None if args.cache_strategy.lower() == "none" else args.cache_strategy
+    )
     caching_settings = CachingSettings(
         strategy=args.cache_strategy,
         cache_dir=args.cache_dir,
@@ -316,6 +327,8 @@ if __name__ == "__main__":
         act_tools=act_tools, reporters=[SimpleHtmlReporter(report_dir=AGENT_WORKSPACE)]
     ) as agent:
         if is_single_task:
-            run_single_task_with_lifecycle(agent, TARGET, caching_settings=caching_settings)
+            run_single_task_with_lifecycle(
+                agent, TARGET, caching_settings=caching_settings
+            )
         else:
             run_folder(agent, TASK_FOLDER, caching_settings=caching_settings)
