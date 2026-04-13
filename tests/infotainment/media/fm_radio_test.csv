@@ -1,0 +1,11 @@
+Test Case ID,Test Case Name,Step Number,Step,Expected Result
+TC-MED-001,FM Radio Tuning,1,Tap the "FM" source button on the Audio screen,FM Radio source is selected and the FM tuner interface is displayed
+,,2,Verify the current FM frequency is displayed on screen,An FM frequency value (e.g. 87.5 - 108.0 MHz) is shown
+,,3,Tap the "Seek Up" (>>) button to scan to the next station,The frequency changes and a new station is tuned; the frequency display updates
+,,4,Verify the new frequency is displayed and is different from the starting frequency,A new FM frequency is shown on screen
+,,5,Tap the "Seek Down" (<<) button to scan to the previous station,The frequency changes and a station is tuned; the frequency display updates
+,,6,Verify the frequency has changed again,The FM frequency display shows an updated value
+,,7,Tap the first preset button (Preset 1) to store the current station,The current station is saved to Preset 1 (button may highlight or show confirmation)
+,,8,Tap "Seek Up" (>>) to tune to a different station,A different station frequency is displayed
+,,9,Tap Preset 1 button to recall the saved station,The FM tuner returns to the frequency that was saved in Preset 1
+,,10,Verify the displayed frequency matches the originally saved Preset 1 frequency,The frequency matches the station stored in step 7

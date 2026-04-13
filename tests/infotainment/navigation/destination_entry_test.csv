@@ -1,0 +1,9 @@
+Test Case ID,Test Case Name,Step Number,Step,Expected Result
+TC-NAV-001,Destination Entry and Route Guidance,1,Tap the search bar or "Enter Destination" button on the Navigation screen,A text input field or address search screen appears with a keyboard
+,,2,Type "1000 Main Street" into the search field using keyboard input,The text "1000 Main Street" is entered in the search field
+,,3,Tap the "Search" button or press Enter to submit the search,Search results are displayed showing matching addresses
+,,4,Tap the first search result from the list,The selected destination is shown on the map with an address confirmation dialog
+,,5,Tap "Start" or "Go" to begin route guidance,Route guidance starts; the map displays a calculated route with turn-by-turn directions
+,,6,Verify the route is displayed on the map as a highlighted path,A visible route line is drawn from current location to the destination
+,,7,Verify turn-by-turn instructions are shown (e.g. next turn direction and distance),A guidance banner or panel shows the next maneuver with distance
+,,8,Tap "Cancel Route" or "Stop" to end route guidance,Route guidance ends; the map returns to a free-browse state without an active route

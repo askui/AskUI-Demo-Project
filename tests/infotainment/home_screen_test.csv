@@ -1,0 +1,9 @@
+Test Case ID,Test Case Name,Step Number,Step,Expected Result
+TC-IVI-001,Home Screen Verification,1,Verify the Home screen is displayed with the Honda logo or branding,Honda logo or branding is visible on the Home screen
+,,2,Verify the "Audio" menu icon is present on the Home screen,Audio icon is displayed and accessible
+,,3,Verify the "Navigation" menu icon is present on the Home screen,Navigation icon is displayed and accessible
+,,4,Verify the "Phone" menu icon is present on the Home screen,Phone icon is displayed and accessible
+,,5,Verify the "Climate" menu icon is present on the Home screen,Climate icon is displayed and accessible
+,,6,Verify the "Settings" menu icon is present on the Home screen,Settings icon is displayed and accessible
+,,7,Verify the status bar displays the current time,Current time is shown in the status bar
+,,8,Verify the status bar displays connectivity indicators (Bluetooth and/or Wi-Fi icons),Connectivity indicator icons are visible in the status bar

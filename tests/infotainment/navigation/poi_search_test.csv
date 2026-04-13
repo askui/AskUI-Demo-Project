@@ -1,0 +1,9 @@
+Test Case ID,Test Case Name,Step Number,Step,Expected Result
+TC-NAV-002,POI Search - Gas Station,1,Tap the search bar or "Points of Interest" button on the Navigation screen,A POI search interface or category list is displayed
+,,2,Type "Gas Station" in the search field or select the "Gas Station" POI category,Gas station search is initiated or the category filter is applied
+,,3,Tap "Search" or press Enter to execute the search,A list of nearby gas station results is displayed
+,,4,Verify at least one gas station result is shown in the results list,One or more gas station entries appear with name and distance information
+,,5,Tap the first gas station result to view its details,A detail view shows the gas station name and address and a map pin
+,,6,Tap "Set as Destination" or "Go" to start navigation to the gas station,Route guidance begins with a route calculated to the selected gas station
+,,7,Verify route guidance has started with turn-by-turn directions,Guidance banner shows the next maneuver and estimated arrival time
+,,8,Tap "Cancel Route" to end navigation,Route guidance ends and the map returns to free-browse mode

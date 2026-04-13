@@ -1,0 +1,10 @@
+Test Case ID,Test Case Name,Step Number,Step,Expected Result
+TC-CLI-001,Temperature Adjustment,1,Read and note the current driver-side temperature displayed on the Climate Control screen,The current temperature value is visible (e.g. 72°F)
+,,2,Tap the driver-side temperature "Up" arrow button to increase temperature by one step,The displayed driver-side temperature increases by one unit (e.g. 72°F -> 73°F)
+,,3,Verify the updated temperature is displayed correctly,The new temperature value is shown on the driver-side display
+,,4,Tap the driver-side temperature "Up" arrow button two more times,The temperature increases by two more units (e.g. 73°F -> 75°F)
+,,5,Verify the driver-side temperature reflects the total increase of three units from the original,The temperature shown is 3 units higher than the original reading
+,,6,Tap the driver-side temperature "Down" arrow button three times to return to the original temperature,The temperature decreases by three units back to the original value
+,,7,Verify the driver-side temperature has returned to its original value,The temperature display matches the value noted in step 1
+,,8,Tap the "A/C" button to toggle the air conditioning,The A/C indicator changes state (on to off or off to on); the button or indicator updates visually
+,,9,Verify the A/C status indicator reflects the new state,The A/C button or status icon clearly shows the toggled state

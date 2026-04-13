@@ -1,0 +1,11 @@
+Test Case ID,Test Case Name,Step Number,Step,Expected Result
+TC-MED-002,USB Media Playback,1,Tap the "USB" source button on the Audio screen,USB source is selected and the media player interface is displayed
+,,2,Verify a track list or "Now Playing" screen appears with track information,Track name and/or artist info is displayed on screen
+,,3,Tap the "Play" button if the track is not already playing,The track begins playback; a progress bar or elapsed time indicator starts moving
+,,4,Verify the elapsed time is advancing (playback is active),The time indicator increments confirming audio playback
+,,5,Tap the "Next Track" (>>) button,The next track in the list begins playing; track name updates
+,,6,Verify the track name has changed to a new track,A different track name is now displayed
+,,7,Tap the "Previous Track" (<<) button,The player returns to the previous track or restarts the current track
+,,8,Tap the "Pause" button,Playback pauses; the elapsed time stops advancing
+,,9,Verify the elapsed time has stopped and the Pause/Play button shows "Play" state,The time indicator is frozen and the button indicates paused state
+,,10,Tap the "Play" button to resume playback,Playback resumes from where it was paused; elapsed time advances again

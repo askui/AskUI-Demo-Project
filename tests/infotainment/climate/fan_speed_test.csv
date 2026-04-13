@@ -1,0 +1,10 @@
+Test Case ID,Test Case Name,Step Number,Step,Expected Result
+TC-CLI-002,Fan Speed Control,1,Note the current fan speed level displayed on the Climate Control screen,The current fan speed level is visible (e.g. level indicator or bar graph)
+,,2,Tap the fan speed "Up" button to increase the fan speed by one level,The fan speed indicator increases by one level
+,,3,Verify the fan speed display updates to the new level,The fan speed indicator or bar reflects the higher speed
+,,4,Tap the fan speed "Up" button two more times to reach a higher fan speed,The fan speed increases by two additional levels
+,,5,Verify the fan speed display reflects the cumulative increase,The fan speed indicator shows a level 3 steps higher than the original
+,,6,Tap the fan speed "Down" button repeatedly until the fan speed returns to the original level,The fan speed decreases step by step back to the original level
+,,7,Verify the fan speed has returned to its original level,The fan speed indicator matches the value noted in step 1
+,,8,Tap the "Auto" button to enable automatic climate control,The Auto mode indicator activates; fan speed may adjust automatically
+,,9,Verify the "Auto" indicator is active on screen,The Auto button or status shows that automatic mode is engaged
