@@ -1,0 +1,45 @@
+{
+  "paired_devices": [
+    {
+      "id": "bt-001",
+      "name": "iPhone 15 Pro - John",
+      "mac_address": "AA:BB:CC:11:22:33",
+      "type": "phone",
+      "paired": true,
+      "connected": false,
+      "profiles": ["HFP", "A2DP", "AVRCP", "PBAP"],
+      "battery_level": 85
+    },
+    {
+      "id": "bt-002",
+      "name": "Galaxy S24 - Sarah",
+      "mac_address": "DD:EE:FF:44:55:66",
+      "type": "phone",
+      "paired": true,
+      "connected": false,
+      "profiles": ["HFP", "A2DP", "AVRCP"],
+      "battery_level": 62
+    }
+  ],
+  "available_devices": [
+    {
+      "id": "bt-003",
+      "name": "AirPods Pro",
+      "mac_address": "11:22:33:AA:BB:CC",
+      "type": "audio",
+      "signal_strength": -45
+    },
+    {
+      "id": "bt-004",
+      "name": "Pixel Watch 2",
+      "mac_address": "77:88:99:DD:EE:FF",
+      "type": "wearable",
+      "signal_strength": -72
+    }
+  ],
+  "settings": {
+    "discoverable": true,
+    "auto_connect": true,
+    "device_name": "Honda Civic 2025"
+  }
+}

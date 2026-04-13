@@ -1,0 +1,49 @@
+{
+  "engine": {
+    "rpm": 800,
+    "speed_kmh": 0,
+    "speed_mph": 0,
+    "fuel_level_percent": 72,
+    "fuel_range_km": 420,
+    "coolant_temp_c": 90,
+    "oil_pressure_ok": true,
+    "check_engine": false
+  },
+  "doors": {
+    "driver": "closed",
+    "passenger": "closed",
+    "rear_left": "closed",
+    "rear_right": "closed",
+    "trunk": "closed",
+    "hood": "closed"
+  },
+  "lights": {
+    "headlights": "auto",
+    "high_beams": false,
+    "fog_lights": false,
+    "interior_lights": "off"
+  },
+  "tires": {
+    "front_left_psi": 33,
+    "front_right_psi": 33,
+    "rear_left_psi": 32,
+    "rear_right_psi": 32,
+    "recommended_psi": 33
+  },
+  "climate": {
+    "driver_temp_f": 72,
+    "passenger_temp_f": 72,
+    "fan_speed": 3,
+    "max_fan_speed": 7,
+    "ac_on": true,
+    "auto_mode": false,
+    "recirculate": false,
+    "air_direction": "face",
+    "rear_defrost": false,
+    "outside_temp_f": 68
+  },
+  "transmission": {
+    "gear": "P",
+    "odometer_km": 12450
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "usb_media": {
+    "device_name": "USB Drive",
+    "total_tracks": 12,
+    "tracks": [
+      { "id": 1, "title": "Bohemian Rhapsody", "artist": "Queen", "album": "A Night at the Opera", "duration_sec": 354, "genre": "Rock" },
+      { "id": 2, "title": "Hotel California", "artist": "Eagles", "album": "Hotel California", "duration_sec": 391, "genre": "Rock" },
+      { "id": 3, "title": "Take On Me", "artist": "a-ha", "album": "Hunting High and Low", "duration_sec": 225, "genre": "Pop" },
+      { "id": 4, "title": "Blinding Lights", "artist": "The Weeknd", "album": "After Hours", "duration_sec": 200, "genre": "Pop" },
+      { "id": 5, "title": "Stairway to Heaven", "artist": "Led Zeppelin", "album": "Led Zeppelin IV", "duration_sec": 482, "genre": "Rock" },
+      { "id": 6, "title": "Superstition", "artist": "Stevie Wonder", "album": "Talking Book", "duration_sec": 245, "genre": "Funk" },
+      { "id": 7, "title": "Come Together", "artist": "The Beatles", "album": "Abbey Road", "duration_sec": 259, "genre": "Rock" },
+      { "id": 8, "title": "Smooth", "artist": "Santana ft. Rob Thomas", "album": "Supernatural", "duration_sec": 295, "genre": "Latin Rock" },
+      { "id": 9, "title": "Billie Jean", "artist": "Michael Jackson", "album": "Thriller", "duration_sec": 294, "genre": "Pop" },
+      { "id": 10, "title": "Sweet Child O Mine", "artist": "Guns N Roses", "album": "Appetite for Destruction", "duration_sec": 356, "genre": "Rock" },
+      { "id": 11, "title": "Watermelon Sugar", "artist": "Harry Styles", "album": "Fine Line", "duration_sec": 174, "genre": "Pop" },
+      { "id": 12, "title": "Levitating", "artist": "Dua Lipa", "album": "Future Nostalgia", "duration_sec": 203, "genre": "Pop" }
+    ]
+  },
+  "bluetooth_audio": {
+    "connected_device": null,
+    "available": false
+  },
+  "playback_state": {
+    "source": "usb",
+    "current_track_id": 1,
+    "position_sec": 0,
+    "playing": false,
+    "shuffle": false,
+    "repeat": "off"
+  }
+}

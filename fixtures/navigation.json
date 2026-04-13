@@ -1,0 +1,56 @@
+{
+  "gps": {
+    "latitude": 37.3861,
+    "longitude": -122.0839,
+    "altitude_m": 32,
+    "speed_kmh": 0,
+    "heading_deg": 0,
+    "fix_quality": "3D",
+    "satellites": 9,
+    "location_name": "Mountain View, CA"
+  },
+  "points_of_interest": [
+    {
+      "id": "poi-001", "name": "Shell Gas Station", "category": "gas_station",
+      "latitude": 37.3891, "longitude": -122.0821, "distance_km": 0.4,
+      "address": "123 Castro St, Mountain View, CA 94041"
+    },
+    {
+      "id": "poi-002", "name": "Chevron", "category": "gas_station",
+      "latitude": 37.3940, "longitude": -122.0790, "distance_km": 1.1,
+      "address": "456 El Camino Real, Mountain View, CA 94040"
+    },
+    {
+      "id": "poi-003", "name": "Starbucks", "category": "coffee",
+      "latitude": 37.3855, "longitude": -122.0855, "distance_km": 0.2,
+      "address": "789 Dana St, Mountain View, CA 94041"
+    },
+    {
+      "id": "poi-004", "name": "Whole Foods Market", "category": "grocery",
+      "latitude": 37.3810, "longitude": -122.0900, "distance_km": 0.8,
+      "address": "100 Shoreline Blvd, Mountain View, CA 94041"
+    },
+    {
+      "id": "poi-005", "name": "El Camino Hospital", "category": "hospital",
+      "latitude": 37.3710, "longitude": -122.0780, "distance_km": 1.8,
+      "address": "2500 Grant Rd, Mountain View, CA 94040"
+    }
+  ],
+  "saved_destinations": [
+    {
+      "id": "dest-001", "name": "Home",
+      "address": "500 Elm St, Sunnyvale, CA 94086",
+      "latitude": 37.3688, "longitude": -122.0363
+    },
+    {
+      "id": "dest-002", "name": "Work",
+      "address": "1000 Main Street, San Jose, CA 95113",
+      "latitude": 37.3382, "longitude": -121.8863
+    }
+  ],
+  "route_simulation": {
+    "enabled": true,
+    "default_speed_kmh": 50,
+    "traffic_delay_factor": 1.2
+  }
+}

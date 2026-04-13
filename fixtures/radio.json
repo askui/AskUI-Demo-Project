@@ -1,0 +1,28 @@
+{
+  "fm_stations": [
+    { "frequency": 87.9, "name": "KQED FM", "genre": "Public Radio", "rds": true, "signal_strength": 92 },
+    { "frequency": 90.3, "name": "KUSF", "genre": "College Radio", "rds": true, "signal_strength": 78 },
+    { "frequency": 93.3, "name": "Wild 94.9", "genre": "Pop", "rds": true, "signal_strength": 95 },
+    { "frequency": 97.3, "name": "KLLC Alice", "genre": "Alternative", "rds": true, "signal_strength": 88 },
+    { "frequency": 99.7, "name": "KBAY Smooth", "genre": "Smooth Jazz", "rds": true, "signal_strength": 85 },
+    { "frequency": 101.3, "name": "KIOI Star", "genre": "Adult Contemporary", "rds": true, "signal_strength": 90 },
+    { "frequency": 104.5, "name": "KFOG", "genre": "Rock", "rds": true, "signal_strength": 82 },
+    { "frequency": 106.1, "name": "KMEL", "genre": "Hip Hop", "rds": true, "signal_strength": 91 }
+  ],
+  "am_stations": [
+    { "frequency": 680, "name": "KNBR", "genre": "Sports", "signal_strength": 80 },
+    { "frequency": 740, "name": "KCBS", "genre": "News", "signal_strength": 88 },
+    { "frequency": 810, "name": "KGO", "genre": "Talk", "signal_strength": 85 },
+    { "frequency": 1050, "name": "KTCT", "genre": "Sports", "signal_strength": 72 }
+  ],
+  "presets": {
+    "fm": [93.3, 97.3, 101.3, 104.5, 106.1, 87.9],
+    "am": [680, 740, 810]
+  },
+  "current_state": {
+    "source": "fm",
+    "frequency": 97.3,
+    "volume": 15,
+    "max_volume": 40
+  }
+}
