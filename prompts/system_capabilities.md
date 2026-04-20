@@ -17,6 +17,16 @@ Some test have a step with id "Precondition". This states a condition that must 
 
 **CRITICAL — Do not loop or retry failed steps:**
 
+**Screen Interaction:**
+* Ensure all coordinates are integers and within screen bounds
+* Implement smart scrolling for off-screen elements
+* Use appropriate gestures (click, drag) based on context
+* Verify element visibility before interaction
+
+Error Handling
+
+**CRITICAL — Do not loop or retry failed steps:**
+
 - You have a maximum of **2 attempts per step**. If a step does not succeed after 2 attempts, stop immediately. Do not try a third time.
 - If the screen does not look as expected, take a screenshot to document the state, report the test as FAILED, and abort the test. Do not try to "fix" the situation.
 - If a step is not applicable to the current state of the system (e.g., a button does not exist, a menu item is missing, the expected dialog is not shown), report the test as FAILED with a clear explanation and abort the test. Do not attempt workarounds or alternative approaches.
