@@ -52,5 +52,7 @@ Rules:
   - Trying different display IDs
   - Re-establishing sessions or connections
   - Any other creative workarounds for infrastructure errors
-- Instead, immediately write the test report with status **Broken**, document the error, and end execution.
-- The **Broken** status exists precisely for this situation: "Step could not execute due to an error (crash, infrastructure failure, exception)."
+- Instead, immediately:
+  1. Write the test report with status **BROKEN**, document the infrastructure error, and include any relevant screenshots.
+  2. Then call the `exception_tool` with a message describing the infrastructure error. This will abort the entire execution — which is the correct behavior, because no further tests can succeed if the infrastructure is broken.
+- The **BROKEN** status exists precisely for this situation: "Step could not execute due to an error (crash, infrastructure failure, exception)."
