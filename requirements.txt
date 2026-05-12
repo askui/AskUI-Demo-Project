@@ -1,2 +1,2 @@
-askui==0.31.0
+askui
 python-dotenv==1.2.1
