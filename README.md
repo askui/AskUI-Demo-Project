@@ -194,7 +194,7 @@ Create the virtual environment and activate it:
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate (Windows)
-source .venv\bin\activate (Mac/Linux)
+source .venv/bin/activate (Mac/Linux)
 ```
 
 ### Step 4: Install Dependencies
