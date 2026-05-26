@@ -171,7 +171,7 @@ Include:
 Before you begin, ensure you have:
 
 - **Python** installed on your system
-- version >=3.11, <3.14
+- version >=3.11, <3.12
 
 - **AskUI Credentials** setup in the askui hub
 
