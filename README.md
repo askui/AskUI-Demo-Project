@@ -205,6 +205,8 @@ Install required packages (only needed the first time or when `requirements.txt`
 pip install -r requirements.txt
 ```
 
+NOTE: IF THIS THROWS AN ERROR, PLEASE MAKE SURE YOU ARE USING PYTHON V11. LATE VERSIONS ARE CURRENTLY NOT SUPPORTED.
+
 ### Step 5: Configure Environment Variables
 
 ```bash
