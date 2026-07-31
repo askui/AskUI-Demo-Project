@@ -1,0 +1,602 @@
+<title>Waypoint — travel-triggered relationship radar</title>
+
+<style>
+:root{
+  --ground:#E7EAE6;
+  --surface:#F5F7F3;
+  --surface-2:#DFE4DE;
+  --ink:#131A1C;
+  --ink-2:#3D4A4C;
+  --ink-3:#687677;
+  --rule:#C6CDC5;
+  --rule-soft:#D6DBD4;
+  --beacon:#B02E67;
+  --beacon-soft:rgba(176,46,103,.10);
+  --route:#26646F;
+  --route-soft:rgba(38,100,111,.12);
+  --amber:#8F5C0E;
+  --amber-soft:rgba(143,92,14,.13);
+  --shadow:0 1px 0 rgba(19,26,28,.05), 0 8px 24px -18px rgba(19,26,28,.5);
+
+  --mono:ui-monospace,SFMono-Regular,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#0D1315;
+    --surface:#151D1F;
+    --surface-2:#1D2729;
+    --ink:#E6EBE7;
+    --ink-2:#B2BEBC;
+    --ink-3:#7E8C8B;
+    --rule:#2B3739;
+    --rule-soft:#222D2F;
+    --beacon:#F0729F;
+    --beacon-soft:rgba(240,114,159,.13);
+    --route:#5FB3C0;
+    --route-soft:rgba(95,179,192,.14);
+    --amber:#D9A24A;
+    --amber-soft:rgba(217,162,74,.14);
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 30px -20px #000;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1315;--surface:#151D1F;--surface-2:#1D2729;--ink:#E6EBE7;--ink-2:#B2BEBC;--ink-3:#7E8C8B;
+  --rule:#2B3739;--rule-soft:#222D2F;--beacon:#F0729F;--beacon-soft:rgba(240,114,159,.13);
+  --route:#5FB3C0;--route-soft:rgba(95,179,192,.14);--amber:#D9A24A;--amber-soft:rgba(217,162,74,.14);
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 10px 30px -20px #000;
+}
+:root[data-theme="light"]{
+  --ground:#E7EAE6;--surface:#F5F7F3;--surface-2:#DFE4DE;--ink:#131A1C;--ink-2:#3D4A4C;--ink-3:#687677;
+  --rule:#C6CDC5;--rule-soft:#D6DBD4;--beacon:#B02E67;--beacon-soft:rgba(176,46,103,.10);
+  --route:#26646F;--route-soft:rgba(38,100,111,.12);--amber:#8F5C0E;--amber-soft:rgba(143,92,14,.13);
+  --shadow:0 1px 0 rgba(19,26,28,.05), 0 8px 24px -18px rgba(19,26,28,.5);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--ground);color:var(--ink);
+  font-family:var(--sans);font-size:16.5px;line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px 96px}
+.measure{max-width:64ch}
+
+h1,h2,h3{text-wrap:balance;margin:0}
+a{color:var(--beacon)}
+:focus-visible{outline:2px solid var(--beacon);outline-offset:3px;border-radius:2px}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--rule);padding:44px 0 30px;margin-bottom:52px}
+.mark{
+  font-family:var(--mono);font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+}
+.mark .dot{width:7px;height:7px;border-radius:50%;background:var(--beacon);flex:none}
+.title{
+  font-family:var(--mono);font-weight:600;letter-spacing:-.02em;
+  font-size:clamp(34px,6.4vw,60px);line-height:1.02;margin:20px 0 0;
+}
+.title em{font-style:normal;color:var(--beacon)}
+.standfirst{margin:20px 0 0;font-size:clamp(17px,2.1vw,20px);line-height:1.5;color:var(--ink-2);max-width:56ch}
+
+/* ---------- section scaffolding ---------- */
+section{margin-top:64px}
+.eyebrow{
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;align-items:center;gap:12px;margin-bottom:14px;
+}
+.eyebrow::after{content:"";height:1px;background:var(--rule);flex:1}
+h2.sec{font-family:var(--mono);font-weight:600;font-size:clamp(21px,2.8vw,27px);letter-spacing:-.01em;margin-bottom:14px}
+.sec + p{margin-top:0}
+p{margin:0 0 16px}
+
+/* ---------- three failures ---------- */
+.triptych{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:26px}
+.fail{background:var(--surface);padding:22px 20px 24px;display:flex;flex-direction:column;gap:10px}
+.fail .tag{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--beacon)}
+.fail h3{font-size:17px;font-weight:650;letter-spacing:-.01em}
+.fail .quote{
+  font-family:var(--mono);font-size:12.5px;line-height:1.55;color:var(--ink-2);
+  border-left:2px solid var(--rule);padding-left:12px;
+}
+.fail p{margin:0;font-size:14.5px;color:var(--ink-2);line-height:1.55}
+
+/* ---------- the join ---------- */
+.join{
+  margin-top:28px;border:1px solid var(--rule);background:var(--surface);padding:26px 22px;
+  display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;text-align:center;
+}
+.join .side{font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--ink-2)}
+.join .side b{display:block;color:var(--ink);font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-size:11px;margin-bottom:6px;color:var(--route)}
+.join .op{font-family:var(--mono);font-size:26px;color:var(--beacon);line-height:1}
+
+/* ---------- brief mockup ---------- */
+.device{
+  margin-top:26px;border:1px solid var(--rule);background:var(--surface);box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.device-bar{
+  display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--rule);
+  background:var(--surface-2);font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+}
+.device-bar .live{display:flex;align-items:center;gap:7px;color:var(--beacon)}
+.device-bar .live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--beacon)}
+.device-bar .spacer{flex:1}
+
+.brief{display:grid;grid-template-columns:216px 1fr}
+@media (max-width:760px){.brief{grid-template-columns:1fr}}
+
+.rail{border-right:1px solid var(--rule);padding:20px 18px;display:flex;flex-direction:column;gap:22px;background:var(--surface)}
+@media (max-width:760px){.rail{border-right:0;border-bottom:1px solid var(--rule)}}
+.rail .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);margin-bottom:7px}
+.rail .v{font-family:var(--mono);font-size:15px;color:var(--ink);letter-spacing:-.01em}
+.rail .v small{display:block;font-size:12px;color:var(--ink-2);letter-spacing:0;margin-top:3px}
+
+.days{display:flex;flex-direction:column;gap:0;font-family:var(--mono);font-size:12px}
+.day{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px dashed var(--rule-soft)}
+.day:last-child{border-bottom:0}
+.day .d{color:var(--ink-3);width:34px;flex:none;letter-spacing:.06em}
+.day .load{flex:1;display:flex;gap:2px}
+.day .load i{height:9px;flex:1;background:var(--rule);border-radius:1px}
+.day .load i.busy{background:var(--route)}
+.day .load i.open{background:var(--beacon-soft);box-shadow:inset 0 0 0 1px var(--beacon)}
+
+.cards{padding:6px 0}
+.grouphead{
+  display:flex;align-items:center;gap:10px;padding:16px 20px 8px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);
+}
+.grouphead::after{content:"";height:1px;background:var(--rule-soft);flex:1}
+.grouphead .n{color:var(--ink-2)}
+
+.card{display:grid;grid-template-columns:38px 1fr;gap:0 14px;padding:16px 20px 18px;border-top:1px solid var(--rule-soft)}
+.card:first-of-type{border-top:0}
+.rank{font-family:var(--mono);font-size:13px;color:var(--ink-3);padding-top:2px;font-variant-numeric:tabular-nums}
+.card .who{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card .who strong{font-size:16.5px;font-weight:650;letter-spacing:-.012em}
+.card .who span{font-size:13.5px;color:var(--ink-2)}
+.pill{
+  font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+  padding:2.5px 7px;border-radius:2px;white-space:nowrap;
+}
+.pill.promise{background:var(--beacon-soft);color:var(--beacon);box-shadow:inset 0 0 0 1px var(--beacon)}
+.pill.overdue{background:var(--amber-soft);color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
+.pill.geo{background:var(--route-soft);color:var(--route)}
+
+.why{margin:8px 0 0;font-size:14.5px;line-height:1.55;color:var(--ink-2)}
+.why b{color:var(--ink);font-weight:600}
+.evid{
+  margin:10px 0 0;font-family:var(--mono);font-size:12.5px;line-height:1.6;color:var(--ink-2);
+  border-left:2px solid var(--beacon);padding:2px 0 2px 12px;
+}
+.evid cite{display:block;font-style:normal;color:var(--ink-3);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-top:5px}
+
+.draft{
+  margin:12px 0 0;background:var(--surface-2);border:1px solid var(--rule-soft);padding:11px 13px;
+  font-size:14px;line-height:1.55;color:var(--ink-2);
+}
+.draft .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:6px}
+
+.meter{display:flex;align-items:center;gap:10px;margin-top:12px}
+.bar{height:5px;flex:1;max-width:190px;display:flex;gap:2px;background:var(--rule-soft)}
+.bar i{height:100%}
+.bar .v{background:var(--beacon)}
+.bar .t{background:var(--route)}
+.bar .f{background:var(--amber)}
+.meter .num{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);font-variant-numeric:tabular-nums;letter-spacing:.06em}
+.acts{display:flex;gap:7px;margin-left:auto;flex-wrap:wrap}
+.btn{
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 10px;border:1px solid var(--rule);background:transparent;color:var(--ink-2);cursor:default;border-radius:2px;
+}
+.btn.primary{border-color:var(--beacon);color:var(--beacon)}
+
+.legend{
+  display:flex;gap:18px;flex-wrap:wrap;padding:14px 20px;border-top:1px solid var(--rule);background:var(--surface-2);
+  font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--ink-3);
+}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:14px;height:5px;display:inline-block}
+
+/* ---------- scoring ---------- */
+.formula{
+  font-family:var(--mono);font-size:clamp(14px,2.4vw,19px);letter-spacing:.02em;
+  padding:18px 20px;border:1px solid var(--rule);background:var(--surface);margin:24px 0 0;text-align:center;
+}
+.formula b{font-weight:600}
+.formula .v{color:var(--beacon)}
+.formula .t{color:var(--route)}
+.formula .f{color:var(--amber)}
+.terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-top:0}
+.term{background:var(--surface);padding:18px 18px 20px}
+.term h4{margin:0 0 8px;font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase}
+.term.v h4{color:var(--beacon)} .term.t h4{color:var(--route)} .term.f h4{color:var(--amber)}
+.term ul{margin:0;padding-left:17px;font-size:14px;line-height:1.6;color:var(--ink-2)}
+.term li{margin-bottom:5px}
+.term li:last-child{margin-bottom:0}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto;margin-top:24px;border:1px solid var(--rule)}
+table{border-collapse:collapse;width:100%;min-width:620px;background:var(--surface);font-size:14.5px}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--rule-soft);vertical-align:top;line-height:1.5}
+th{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
+  background:var(--surface-2);border-bottom:1px solid var(--rule);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+td strong{font-weight:650}
+td .verdict{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-top:5px}
+.go{color:var(--route)} .care{color:var(--amber)} .no{color:var(--ink-3)}
+
+/* ---------- phases ---------- */
+.phases{display:flex;flex-direction:column;margin-top:24px;border:1px solid var(--rule);background:var(--surface)}
+.phase{display:grid;grid-template-columns:78px 1fr;gap:0 18px;padding:20px;border-bottom:1px solid var(--rule-soft)}
+.phase:last-child{border-bottom:0}
+.phase .no{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);padding-top:3px}
+.phase h4{margin:0 0 6px;font-size:16.5px;font-weight:650;letter-spacing:-.01em}
+.phase p{margin:0;font-size:14.5px;color:var(--ink-2);line-height:1.6}
+.phase.first{background:var(--beacon-soft)}
+.phase.first .no{color:var(--beacon)}
+
+/* ---------- decisions ---------- */
+.decisions{margin-top:22px;display:flex;flex-direction:column;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.dec{background:var(--surface);padding:16px 18px}
+.dec h4{margin:0 0 5px;font-size:15.5px;font-weight:650;letter-spacing:-.01em}
+.dec p{margin:0;font-size:14.5px;color:var(--ink-2);line-height:1.58}
+.dec .rec{color:var(--route);font-weight:600}
+
+footer{margin-top:72px;padding-top:22px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);display:flex;gap:16px;flex-wrap:wrap}
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="mark"><span class="dot"></span> Product design proposal <span>·</span> Working name: Waypoint <span>·</span> 31 Jul 2026</div>
+    <h1 class="title">Your network,<br>sorted by <em>where you'll be</em><br>next Tuesday.</h1>
+    <p class="standfirst">Three things go wrong when a founder travels: promises get dropped, proximity goes unnoticed, and good relationships quietly decay. All three are the same missing join.</p>
+  </header>
+
+  <section>
+    <div class="eyebrow">What's actually broken</div>
+    <h2 class="sec">One complaint, three different failures</h2>
+    <p class="measure">They need separate machinery, so it's worth naming them separately before designing anything.</p>
+
+    <div class="triptych">
+      <div class="fail">
+        <div class="tag">Dropped promise</div>
+        <h3>A commitment with no trigger</h3>
+        <div class="quote">"let me know when you're in the south bay and we'll grab coffee"</div>
+        <p>You meant it. It lives inside a message thread and nothing ever turned it into an object that could fire later.</p>
+      </div>
+      <div class="fail">
+        <div class="tag">Invisible proximity</div>
+        <h3>A graph with no geography</h3>
+        <div class="quote">4,100 connections · 180 in the Bay Area · 9 worth a coffee this week</div>
+        <p>Your network has no location attached. LinkedIn will never tell you "these nine of yours are here right now".</p>
+      </div>
+      <div class="fail">
+        <div class="tag">Decay</div>
+        <h3>Warmth with no clock</h3>
+        <div class="quote">Two great calls in 2025. Then fourteen months of nothing.</div>
+        <p>Nothing measures staleness against relationship value, and nothing knows when re-contacting is cheap — same city, same week.</p>
+      </div>
+    </div>
+
+    <div class="join">
+      <div class="side"><b>Where you'll be</b>trips · calendar<br>flight confirmations<br>live location</div>
+      <div class="op">⋈</div>
+      <div class="side"><b>Who you know</b>connections · message history<br>meeting transcripts<br>CRM &amp; fit profiles</div>
+      <div class="op">=</div>
+      <div class="side"><b>The brief</b>a ranked list of plays<br>for one place<br>and one week</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">The core object</div>
+    <h2 class="sec">The Trip Brief</h2>
+    <p class="measure">A trip is a place plus a date range. The brief turns it into a ranked list of cards. Every card answers <em>who</em>, <em>why now</em>, <em>what's the evidence</em>, and <em>what do I send</em> — and shows the arithmetic that ranked it.</p>
+
+    <div class="device">
+      <div class="device-bar">
+        <span class="live">Brief SFO-0908</span>
+        <span class="spacer"></span>
+        <span>Rescored 04:12 · 9 plays · 3 promises</span>
+      </div>
+
+      <div class="brief">
+        <aside class="rail">
+          <div>
+            <div class="k">Trip</div>
+            <div class="v">San Francisco<small>8–12 Sep · Bay Area</small></div>
+          </div>
+          <div>
+            <div class="k">Anchor</div>
+            <div class="v">SoMa<small>Hotel, 3rd &amp; Folsom</small></div>
+          </div>
+          <div>
+            <div class="k">Capacity</div>
+            <div class="days">
+              <div class="day"><span class="d">Tue</span><span class="load"><i class="busy"></i><i class="busy"></i><i class="open"></i><i></i></span></div>
+              <div class="day"><span class="d">Wed</span><span class="load"><i class="busy"></i><i class="busy"></i><i class="busy"></i><i class="busy"></i></span></div>
+              <div class="day"><span class="d">Thu</span><span class="load"><i class="busy"></i><i class="open"></i><i class="open"></i><i></i></span></div>
+              <div class="day"><span class="d">Fri</span><span class="load"><i class="open"></i><i class="open"></i><i></i><i></i></span></div>
+            </div>
+          </div>
+          <div>
+            <div class="k">Source</div>
+            <div class="v" style="font-size:12.5px">Detected from<small>flight confirmation, 14 Jul</small></div>
+          </div>
+        </aside>
+
+        <div class="cards">
+          <div class="grouphead">Promises you owe <span class="n">3</span></div>
+
+          <article class="card">
+            <div class="rank">01</div>
+            <div>
+              <div class="who">
+                <strong>Aleksandra Ruiz</strong>
+                <span>VP Quality · Northgate Mobility</span>
+                <span class="pill promise">Open invitation</span>
+                <span class="pill geo">Sunnyvale · 47 min</span>
+              </div>
+              <p class="why"><b>She invited you 8 months ago and you never replied to that part.</b> Northgate moved head-unit validation in-house in March — that's the exact wedge, and she owns the budget line.</p>
+              <blockquote class="evid">"no rush at all — but let me know when you're next in the south bay and we'll grab coffee"
+                <cite>LinkedIn · 14 Nov 2025 · unanswered</cite></blockquote>
+              <div class="draft"><span class="lbl">Draft</span>Aleksandra — finally taking you up on this. I'm in the Bay 8–12 Sep and could come down to Sunnyvale Thursday morning. Coffee?</div>
+              <div class="meter">
+                <span class="bar"><i class="v" style="width:46%"></i><i class="t" style="width:28%"></i><i class="f" style="width:18%"></i></span>
+                <span class="num">92</span>
+                <span class="acts"><button class="btn primary">Send</button><button class="btn">Hold Thu 09:30</button><button class="btn">Not now</button></span>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="rank">02</div>
+            <div>
+              <div class="who">
+                <strong>Tomas Bergström</strong>
+                <span>Founder · Halden Avionics</span>
+                <span class="pill promise">You promised</span>
+                <span class="pill overdue">14 months overdue</span>
+              </div>
+              <p class="why"><b>You offered an intro to a certification lead and never sent it.</b> This is a debt, not an opportunity — it ranks above anything you'd merely like to do.</p>
+              <blockquote class="evid">"yes please, that intro would be huge — whenever you get a moment"
+                <cite>Email · 2 Jun 2025 · you said "on it this week"</cite></blockquote>
+              <div class="draft"><span class="lbl">Draft</span>Tomas — this is embarrassingly late. Making that intro today, and I'm in SF next week if you're around.</div>
+              <div class="meter">
+                <span class="bar"><i class="v" style="width:42%"></i><i class="t" style="width:34%"></i><i class="f" style="width:10%"></i></span>
+                <span class="num">88</span>
+                <span class="acts"><button class="btn primary">Send</button><button class="btn">Mark done</button><button class="btn">Not now</button></span>
+              </div>
+            </div>
+          </article>
+
+          <div class="grouphead">Pipeline <span class="n">4</span></div>
+
+          <article class="card">
+            <div class="rank">03</div>
+            <div>
+              <div class="who">
+                <strong>Priya Raghavan</strong>
+                <span>Head of Test Engineering · Corva Medical</span>
+                <span class="pill geo">Mission Bay · 12 min</span>
+              </div>
+              <p class="why"><b>Strong ICP, and the timing signal just fired.</b> Corva posted three validation-engineer roles last month — they're scaling manual QA, which is the problem right before yours. Never contacted; second-degree via two mutuals.</p>
+              <div class="draft"><span class="lbl">Draft</span>Priya — I see Corva is building out validation headcount. We work with medtech teams hitting exactly that wall. I'm in Mission Bay 8–12 Sep, worth 30 minutes?</div>
+              <div class="meter">
+                <span class="bar"><i class="v" style="width:40%"></i><i class="t" style="width:22%"></i><i class="f" style="width:14%"></i></span>
+                <span class="num">76</span>
+                <span class="acts"><button class="btn primary">Send</button><button class="btn">Not relevant</button></span>
+              </div>
+            </div>
+          </article>
+
+          <div class="grouphead">Capital <span class="n">1</span></div>
+
+          <article class="card">
+            <div class="rank">04</div>
+            <div>
+              <div class="who">
+                <strong>Daniel Okonkwo</strong>
+                <span>Partner · Ridgeline Ventures</span>
+                <span class="pill geo">Menlo Park · 41 min</span>
+              </div>
+              <p class="why"><b>Warm but going cold, and you're not raising — which is the right time.</b> Last exchange 11 months ago; he asked to be kept posted. Ridgeline closed a new fund in May with a stated infrastructure thesis.</p>
+              <blockquote class="evid">"keep me posted on the automotive traction — that's the number I'd want to see"
+                <cite>LinkedIn · 3 Sep 2025</cite></blockquote>
+              <div class="draft"><span class="lbl">Draft</span>Daniel — you asked for the automotive number. It's up 3.4× since we spoke. Not raising, just keeping the promise. Around Menlo Park on the 11th if you want the longer version.</div>
+              <div class="meter">
+                <span class="bar"><i class="v" style="width:34%"></i><i class="t" style="width:26%"></i><i class="f" style="width:12%"></i></span>
+                <span class="num">71</span>
+                <span class="acts"><button class="btn primary">Send</button><button class="btn">Not now</button></span>
+              </div>
+            </div>
+          </article>
+
+          <div class="grouphead">Catch-ups <span class="n">1</span></div>
+
+          <article class="card">
+            <div class="rank">05</div>
+            <div>
+              <div class="who">
+                <strong>Meike Vogler</strong>
+                <span>Staff Engineer · Lantern Robotics</span>
+                <span class="pill geo">Oakland · 28 min</span>
+              </div>
+              <p class="why"><b>No commercial angle — you just used to talk every month and haven't in a year.</b> Your cadence with her was the strongest of anyone outside the company. Ranked last on purpose; never ranked zero.</p>
+              <div class="meter">
+                <span class="bar"><i class="v" style="width:22%"></i><i class="t" style="width:24%"></i><i class="f" style="width:12%"></i></span>
+                <span class="num">58</span>
+                <span class="acts"><button class="btn primary">Send</button><button class="btn">Not now</button></span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="legend">
+        <span><i style="background:var(--beacon)"></i> Value</span>
+        <span><i style="background:var(--route)"></i> Timeliness</span>
+        <span><i style="background:var(--amber)"></i> Feasibility</span>
+        <span>Every score opens to its breakdown — no naked numbers</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Ranking</div>
+    <h2 class="sec">Explainable arithmetic, not a model</h2>
+    <p class="measure">The user has to be able to see why a card ranked where it did. The first inexplicable suggestion is where trust dies, so the ranking stays hand-tunable code.</p>
+
+    <div class="formula">
+      score &nbsp;=&nbsp; <b class="v">value</b> &nbsp;×&nbsp; <b class="t">timeliness</b> &nbsp;×&nbsp; <b class="f">feasibility</b>
+    </div>
+    <div class="terms">
+      <div class="term v">
+        <h4>Value</h4>
+        <ul>
+          <li><strong>Promise</strong> — an explicit unreturned invitation. Strongest signal in the system.</li>
+          <li><strong>ICP</strong> — company and title against your fit profile.</li>
+          <li><strong>Investor</strong> — stage, thesis, check size vs. your next raise.</li>
+          <li><strong>Partner</strong> — integrators, bench vendors, tooling ecosystems.</li>
+          <li><strong>Relationship</strong> — warmth with no commercial angle. Lower, never zero.</li>
+        </ul>
+      </div>
+      <div class="term t">
+        <h4>Timeliness</h4>
+        <ul>
+          <li>Promise age, decayed — old ones surface as <em>overdue</em> rather than dropping off.</li>
+          <li>Staleness measured against <em>your</em> historic cadence with that person.</li>
+          <li>Live triggers: job change, funding round, a post about a problem you solve.</li>
+        </ul>
+      </div>
+      <div class="term f">
+        <h4>Feasibility</h4>
+        <ul>
+          <li>Travel time from that day's anchor — not straight-line distance. SoMa to the Peninsula is a two-hour commitment and the card should say so.</li>
+          <li>Do you have a real gap in the calendar.</li>
+          <li>Are they reachable — recent activity, past response rate.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="measure" style="margin-top:22px">Dismissals are training data, so they're three buttons, not one: <em>not relevant</em>, <em>not now</em>, and <em>wrong person</em> update different weights.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">Feasibility check</div>
+    <h2 class="sec">The LinkedIn problem, honestly</h2>
+    <p class="measure">LinkedIn is the whole product and LinkedIn does not want to give you this data. Any design that hand-waves here is a design that doesn't ship.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Path</th><th>What you get</th><th>The catch</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Data export</strong><span class="verdict go">Start here</span></td>
+            <td>Connections file plus the <strong>complete message archive</strong> — which is exactly where the forgotten promises are.</td>
+            <td>Official and ToS-clean, but manual and roughly monthly. Carries no location field, which the whole product pivots on.</td>
+          </tr>
+          <tr>
+            <td><strong>Gojberry</strong><span class="verdict go">Already yours</span></td>
+            <td>Live LinkedIn threads and outbound sending, for conversations that flow through it.</td>
+            <td>Only covers what's in that inbox — a live channel, not the historical archive.</td>
+          </tr>
+          <tr>
+            <td><strong>Hosted unofficial API</strong><span class="verdict care">Accept the risk knowingly</span></td>
+            <td>Live connections, live messaging, send.</td>
+            <td>Account automation against ToS. Real companies build on it; the restriction risk sits on your personal account.</td>
+          </tr>
+          <tr>
+            <td><strong>Your own computer-use agent</strong><span class="verdict care">On-brand, same exposure</span></td>
+            <td>Anything a logged-in human can see, driven locally — the data never leaves your machine.</td>
+            <td>AskUI automating LinkedIn is a good demo story and the same ToS exposure as any other automation.</td>
+          </tr>
+          <tr>
+            <td><strong>Official partner APIs</strong><span class="verdict no">Not a path</span></td>
+            <td>Effectively nothing relevant.</td>
+            <td>No connection list, no message read access.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-family:var(--mono);font-size:16px;margin:34px 0 10px;letter-spacing:-.01em">And the location gap</h3>
+    <p class="measure">Connections export with no location, so the pivot field has to be manufactured in three tiers: <strong>enrich</strong> the top few hundred by score only (never all 4,000 — that's real money), <strong>infer</strong> from company offices, past meeting locations and message timestamps, and <strong>correct</strong> by hand with one tap that sticks forever. Every location carries a confidence, and a weak one reads as "likely in SF" rather than a false certainty.</p>
+    <p class="measure">Everything else you already have connected: calendar and flight confirmations for trip detection, meeting transcripts for what you promised out loud, and the CRM for pipeline context and write-back.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">Sequence</div>
+    <h2 class="sec">Build the payoff first</h2>
+    <div class="phases">
+      <div class="phase first">
+        <div class="no">Phase 1<br>~2 weeks</div>
+        <div>
+          <h4>"We found 23 open invitations in your history. Eleven are still warm."</h4>
+          <p>Import the export, run promise extraction over the entire archive, and ship exactly one screen: every open promise, ranked by warmth × age, each with its original quote and a draft reply. No trips, no map, no geography. This is useful on its own — and if this screen isn't compelling, stop and don't build the rest.</p>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="no">Phase 2</div>
+        <div>
+          <h4>Trips</h4>
+          <p>Manual trip creation, the place hierarchy that makes "South Bay" match a trip to "SF", location enrichment for the top-ranked few hundred, and the full ranked brief with drafts. Calendar read for real free slots.</p>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="no">Phase 3</div>
+        <div>
+          <h4>Ambient</h4>
+          <p>Trips detected from flight mail and calendar. A continuous sweep so new promises are captured as they arrive. One pre-trip brief and one daily digest while travelling. Meeting transcripts in, interactions written back to the CRM.</p>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="no">Phase 4</div>
+        <div>
+          <h4>Sharpen</h4>
+          <p>Fit profiles editable in plain language. Live signals — job changes, funding, posts. Weights tuned by your dismissals. Live LinkedIn read, if you've decided you want it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Before building</div>
+    <h2 class="sec">Five decisions that are yours</h2>
+    <div class="decisions">
+      <div class="dec">
+        <h4>Live LinkedIn read, or monthly exports?</h4>
+        <p>Freshness against account risk. <span class="rec">Recommendation: exports through Phase 3</span> — it changes nothing before Phase 4, so the decision can wait until you've seen whether the product earns it.</p>
+      </div>
+      <div class="dec">
+        <h4>Personal tool, or product?</h4>
+        <p>Everything above is designed single-user. <span class="rec">Recommendation: stay single-user until Phase 3 ships</span> — going multi-tenant makes both the privacy architecture and the LinkedIn access story materially harder.</p>
+      </div>
+      <div class="dec">
+        <h4>How much enrichment do you buy?</h4>
+        <p><span class="rec">Recommendation: top 300 by score, plus anyone with an open promise, plus on demand.</span> Most of a 4,000-person network will never rank into a brief.</p>
+      </div>
+      <div class="dec">
+        <h4>How loud is it?</h4>
+        <p><span class="rec">Recommendation: one pre-trip brief, one daily digest while travelling, nothing else.</span> An app that pings you about people is an app you mute in week two.</p>
+      </div>
+      <div class="dec">
+        <h4>Whose voice do the drafts use?</h4>
+        <p>They need a style sample from your real sent messages, or every draft reads like a sales sequence and you rewrite all of them — at which point the feature is worse than nothing. <span class="rec">And nothing ever auto-sends.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">One more thing</div>
+    <h2 class="sec">This system will hold every private message you've exchanged with thousands of people</h2>
+    <p class="measure">Including their words, which they did not consent to hand to a vendor. That makes a few things non-negotiable rather than nice-to-have: single-tenant or self-hosted storage, only the relevant thread window ever sent to a model, message bodies encrypted at rest with just the derived objects in the hot path, and deleting a person deleting their messages — not just their row.</p>
+  </section>
+
+  <footer>
+    <span>Waypoint</span><span>·</span><span>Design proposal</span><span>·</span><span>Full spec: docs/waypoint/DESIGN.md</span>
+  </footer>
+</div>
